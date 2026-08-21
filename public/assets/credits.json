@@ -2,7 +2,7 @@
   {
     "name": "hero",
     "model": "gpt-image-2",
-    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single young hero character in a teal hooded cloak holding a short glowing sword, front view, full body, centered, plain background",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single enlightened entity protagonist, a compact humanoid silhouette made of solid luminous teal energy with a bright white-gold core and glowing short sword, crisp dark outline, fully filled body with no transparent holes, front view, full body Place the subject centered with margin on a solid flat uniform bright magenta (#ff00ff) background that completely fills the frame; no gradient, no vignette, no shadow, no ground plane, dark crisp outline around the subject.",
     "quality": "high",
     "size": "1024x1024",
     "approxCostUsd": 0.17

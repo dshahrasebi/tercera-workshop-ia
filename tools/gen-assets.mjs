@@ -33,7 +33,7 @@ const COST = { low: 0.02, medium: 0.07, high: 0.17 };
 // the room is a full opaque painted scene.
 const ASSETS = [
   { name: "hero", max: 160, quality: "high", chroma: true,
-    prompt: "a single young hero character in a teal hooded cloak holding a short glowing sword, front view, full body" },
+    prompt: "a single enlightened entity protagonist, a compact humanoid silhouette made of solid luminous teal energy with a bright white-gold core and glowing short sword, crisp dark outline, fully filled body with no transparent holes, front view, full body" },
   { name: "enemy", max: 150, quality: "high", chroma: true,
     prompt: "a single small menacing corrupted slime-bot creature with glowing magenta eyes and metal shards, front view" },
   { name: "weapon_nano", max: 96, quality: "medium", chroma: true,

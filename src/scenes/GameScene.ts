@@ -41,9 +41,12 @@ export class GameScene extends Phaser.Scene {
   private player!: Sprite;
   private playerShadow!: Phaser.GameObjects.Ellipse;
   private playerGlow!: Phaser.GameObjects.Image;
+  private playerPlate!: Phaser.GameObjects.Ellipse;
+  private playerCore!: Phaser.GameObjects.Ellipse;
   private guardians!: Sprite[];
   private boss?: Sprite;
   private orbs: Sprite[] = [];
+  private layoutWalls: Phaser.GameObjects.Rectangle[] = [];
   private bars = new WeakMap<Sprite, Phaser.GameObjects.Graphics>();
   private chest!: Phaser.GameObjects.Image;
   private chestOpened = false;
@@ -98,6 +101,7 @@ export class GameScene extends Phaser.Scene {
     this.seenWeapons.clear();
     this.weaponUsage = { nano: 0, standard: 0, frontier: 0 };
     this.orbs = [];
+    this.layoutWalls = [];
     this.boss = undefined;
     this.startTime = this.time.now;
 
@@ -116,24 +120,35 @@ export class GameScene extends Phaser.Scene {
     this.chest = this.add.image(WALL_INSET + 70, WALL_INSET + 60, "chest").setDepth(10);
     fitHeight(this.chest, 66);
 
-    // Player. A soft shadow, a glowing aura, and (on capable GPUs) an FX glow make
-    // the hero read clearly against busy painted rooms.
+    // Player. Luminous entity treatment contrasts with solid enemies without a fake blob.
     this.playerShadow = this.add.ellipse(0, 0, 46, 16, 0x000000, 0.33).setDepth(2);
     this.playerGlow = this.add
       .image(0, 0, "glow")
       .setTint(0x8affe0)
       .setBlendMode(Phaser.BlendModes.ADD)
-      .setDepth(11)
+      .setDepth(10)
       .setDisplaySize(150, 150)
-      .setAlpha(0.6);
-    this.tweens.add({ targets: this.playerGlow, alpha: 0.85, yoyo: true, repeat: -1, duration: 900, ease: "Sine.inOut" });
+      .setAlpha(0.24);
+    this.tweens.add({ targets: this.playerGlow, alpha: 0.34, yoyo: true, repeat: -1, duration: 900, ease: "Sine.inOut" });
+    this.playerCore = this.add
+      .ellipse(0, 0, 66, 78, 0x8affe0, 0.1)
+      .setStrokeStyle(2, 0xc9fff3, 0.86)
+      .setDepth(11);
+    this.tweens.add({ targets: this.playerCore, alpha: 0.2, scale: 1.06, yoyo: true, repeat: -1, duration: 1100, ease: "Sine.inOut" });
+    this.playerPlate = this.add
+      .ellipse(0, 0, 66, 22, 0x8affe0, 0.18)
+      .setStrokeStyle(2, 0x8affe0, 0.8)
+      .setDepth(11.5);
     this.player = this.physics.add.sprite(GAME_W / 2, GAME_H - WALL_INSET - 40, "hero");
-    this.player.setDepth(12).setCollideWorldBounds(true);
+    this.player.setDepth(12).setCollideWorldBounds(true).setAlpha(1);
     fitHeight(this.player, 88);
     this.player.setData("radius", PLAYER_RADIUS);
     if (this.renderer.type === Phaser.WEBGL) {
       this.player.postFX.addGlow(0x8affe0, 4, 0, false, 0.1, 14);
     }
+
+    this.buildLayout();
+    this.addLayoutColliders(this.player);
 
     // Guardians (mission 1).
     this.guardians = [];
@@ -163,8 +178,44 @@ export class GameScene extends Phaser.Scene {
     e.setData("maxHp", ENEMY_HP);
     e.setData("barW", 44);
     e.setData("radius", ENEMY_RADIUS);
+    this.addLayoutColliders(e);
     this.bars.set(e, this.add.graphics().setDepth(40));
     this.guardians.push(e);
+  }
+
+  private buildLayout() {
+    const wallY = 270;
+    const wallHeight = 18;
+    const walls = [
+      { x: 350, y: 180, width: 18, height: 180 },
+      { x: 610, y: 180, width: 18, height: 180 },
+      { x: 157.5, y: wallY, width: 115, height: wallHeight },
+      { x: 342.5, y: wallY, width: 25, height: wallHeight },
+      { x: 385, y: wallY, width: 70, height: wallHeight },
+      { x: 575, y: wallY, width: 70, height: wallHeight },
+      { x: 627.5, y: wallY, width: 35, height: wallHeight },
+      { x: 812.5, y: wallY, width: 95, height: wallHeight },
+    ];
+    for (const spec of walls) {
+      const wall = this.add
+        .rectangle(spec.x, spec.y, spec.width, spec.height, 0x172530, 0.92)
+        .setStrokeStyle(2, 0x64778b, 0.95)
+        .setDepth(8);
+      this.physics.add.existing(wall, true);
+      this.layoutWalls.push(wall);
+    }
+
+    // Three open doorways connect left, center, and right upper rooms.
+    for (const x of [275, 480, 705]) {
+      this.add.rectangle(x, wallY, 100, 14, 0x8affe0, 0.12).setDepth(7);
+      this.add.rectangle(x - 56, wallY, 8, 38, 0x8295aa, 0.95).setDepth(9);
+      this.add.rectangle(x + 56, wallY, 8, 38, 0x8295aa, 0.95).setDepth(9);
+      this.add.rectangle(x, wallY - 17, 100, 4, 0x8affe0, 0.7).setDepth(9);
+    }
+  }
+
+  private addLayoutColliders(sprite: Sprite) {
+    for (const wall of this.layoutWalls) this.physics.add.collider(sprite, wall);
   }
 
   private bindInput() {
@@ -263,9 +314,11 @@ export class GameScene extends Phaser.Scene {
   // ---------- gameplay ----------
 
   update(time: number) {
-    // Keep the shadow + aura glued to the hero (also while paused on a card).
-    this.playerShadow.setPosition(this.player.x, this.player.y + this.player.displayHeight * 0.34);
+    // Keep the shadow, aura, and plate glued to the hero (also while paused on a card).
+    this.playerShadow.setPosition(this.player.x, this.player.y + this.player.displayHeight * 0.38);
     this.playerGlow.setPosition(this.player.x, this.player.y);
+    this.playerCore.setPosition(this.player.x, this.player.y);
+    this.playerPlate.setPosition(this.player.x, this.player.y + this.player.displayHeight * 0.38);
 
     if (this.locked) {
       this.player.setVelocity(0, 0);
@@ -328,6 +381,7 @@ export class GameScene extends Phaser.Scene {
     b.setData("barW", 130);
     b.setData("radius", BOSS_RADIUS);
     b.setData("boss", true);
+    this.addLayoutColliders(b);
     this.bars.set(b, this.add.graphics().setDepth(40));
     this.boss = b;
     const now = this.time.now;
@@ -411,10 +465,10 @@ export class GameScene extends Phaser.Scene {
   // ---------- combat ----------
 
   private selectWeapon(i: number) {
+    if (this.locked) return;
     this.weaponIndex = i;
     this.refreshHud();
     play("ui");
-    if (this.locked) return;
     this.floating(this.player.x, this.player.y - 54, this.weapon.label[getLang()], hex(this.weapon.color));
     if (!this.seenWeapons.has(this.weapon.id)) {
       this.seenWeapons.add(this.weapon.id);
@@ -610,8 +664,13 @@ export class GameScene extends Phaser.Scene {
   private async withCard(fn: () => Promise<void>) {
     this.locked = true;
     this.player.setVelocity(0, 0);
-    await fn();
-    if (this.phase !== "done") this.locked = false;
+    this.scene.pause();
+    try {
+      await fn();
+    } finally {
+      if (this.phase !== "done") this.locked = false;
+      this.scene.resume();
+    }
   }
 
   private showIntro() {
