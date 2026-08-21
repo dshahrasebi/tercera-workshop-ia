@@ -45,6 +45,63 @@ const S: Dict = {
   meta_model: { es: "Modelo", en: "Model" },
   meta_quality: { es: "Calidad", en: "Quality" },
   meta_cost: { es: "Coste aprox.", en: "Approx. cost" },
+
+  // --- Title ---
+  title_tag: { es: "Hecho 100% con IA", en: "100% made with AI" },
+  title_tagline: {
+    es: "Los tokens son tu puntuación. Tus armas son modelos de IA. Gasta con criterio.",
+    en: "Tokens are your score. Your weapons are AI models. Spend deliberately.",
+  },
+  title_name_label: { es: "Tu nombre", en: "Your name" },
+  title_name_ph: { es: "Escribe tu nombre", en: "Enter your name" },
+  title_play: { es: "Jugar", en: "Play" },
+  title_leaderboard: { es: "Clasificación", en: "Leaderboard" },
+  title_lang: { es: "EN", en: "ES" },
+  sound_on: { es: "Sonido ON", en: "Sound ON" },
+  sound_off: { es: "Sonido OFF", en: "Sound OFF" },
+
+  // --- Missions / boss ---
+  mission_label: { es: "Misión", en: "Mission" },
+  mission_guardians: { es: "Derrota a los guardianes", en: "Defeat the guardians" },
+  mission_boss: { es: "Derrota al Núcleo corrupto", en: "Defeat the Corrupted Core" },
+  boss_appears_tag: { es: "Jefe final", en: "Final boss" },
+  boss_appears_title: { es: "El Núcleo despierta", en: "The Core awakens" },
+  boss_appears_body: {
+    es: "Aguanta mucho daño. Aquí el <b>modelo de frontera</b> por fin merece su coste — pero úsalo solo cuando de verdad hace falta.",
+    en: "It soaks huge damage. Here the <b>frontier model</b> finally earns its cost — but use it only when it truly matters.",
+  },
+
+  // --- Result / leaderboard ---
+  result_victory_tag: { es: "Partida completada", en: "Run complete" },
+  result_victory_title: { es: "¡Núcleo destruido!", en: "Core destroyed!" },
+  result_defeat_tag: { es: "Fin de la partida", en: "Game over" },
+  result_defeat_title: { es: "Te quedaste sin corazones", en: "You ran out of hearts" },
+  result_defeat_body: {
+    es: "Pero conservaste tus tokens. Reintenta y gasta con más criterio.",
+    en: "But you kept your tokens. Retry and spend more deliberately.",
+  },
+  result_final_tokens: { es: "Tokens finales", en: "Final tokens" },
+  result_weapon_usage: { es: "Uso de armas", en: "Weapon usage" },
+  result_lesson: {
+    es: "Como con los modelos de IA, <b>el más potente no siempre es la mejor opción</b>. La eficiencia gana.",
+    en: "As with AI models, <b>the most powerful isn't always the right pick</b>. Efficiency wins.",
+  },
+  result_submitting: { es: "Enviando puntuación…", en: "Submitting score…" },
+  result_submit_ok: { es: "Puntuación enviada a la clasificación", en: "Score submitted to the leaderboard" },
+  result_submit_fail: { es: "Sin conexión: puntuación no enviada", en: "Offline: score not submitted" },
+  result_play_again: { es: "Jugar otra vez", en: "Play again" },
+  result_retry: { es: "Reintentar", en: "Retry" },
+  result_menu: { es: "Menú", en: "Menu" },
+  made_with_ai_cost: {
+    es: "Todo el arte de este juego se generó con IA por unos {cost}.",
+    en: "Every image in this game was AI-generated for about {cost}.",
+  },
+
+  lb_title: { es: "Clasificación", en: "Leaderboard" },
+  lb_loading: { es: "Cargando…", en: "Loading…" },
+  lb_empty: { es: "Aún no hay puntuaciones. ¡Sé el primero!", en: "No scores yet. Be the first!" },
+  lb_you: { es: "TÚ", en: "YOU" },
+  lb_offline: { es: "Clasificación no disponible (sin servidor).", en: "Leaderboard unavailable (no server)." },
 };
 
 export function t(key: keyof typeof S): string {

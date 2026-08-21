@@ -44,10 +44,70 @@
         background: #6a5cff; color: #fff; font-size: 14px; font-weight: 600;
       }
       .card button:hover { background: #7d70ff; }
+
+      /* Full-screen overlays (title / result / leaderboard) drawn over the canvas art */
+      #screen-layer {
+        position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+        background: rgba(6,7,16,.42); z-index: 15; padding: 20px;
+      }
+      #screen-layer.show { display: flex; }
+      .screen {
+        position: relative; max-width: 540px; width: 100%; text-align: center;
+        background: linear-gradient(160deg, rgba(27,30,51,.94), rgba(18,20,38,.96));
+        border: 1px solid #33385f; border-radius: 18px; padding: 26px 26px 24px;
+        box-shadow: 0 22px 70px rgba(0,0,0,.65); animation: pop .2s ease-out;
+      }
+      .screen.wide { max-width: 620px; }
+      .screen .tag { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #8ff0d4; }
+      .screen .brand {
+        margin: 6px 0 2px; font-size: 46px; font-weight: 800; letter-spacing: .01em;
+        background: linear-gradient(120deg, #7cffd4, #7d70ff 60%, #ff8cf0);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      .screen h2 { margin: 4px 0 10px; font-size: 24px; }
+      .screen .tagline { margin: 0 auto 18px; max-width: 420px; line-height: 1.5; font-size: 14.5px; color: #c7c9e0; }
+      .screen p { line-height: 1.5; font-size: 14px; color: #c7c9e0; }
+      .screen input {
+        width: 100%; padding: 12px 14px; margin: 4px 0 14px; font-size: 15px;
+        background: #0e1120; border: 1px solid #33385f; border-radius: 10px; color: #e8e9f3; text-align: center;
+      }
+      .screen input:focus { outline: none; border-color: #6a5cff; }
+      .field-label { display: block; text-align: left; font-size: 12px; color: #9aa0c9; margin-bottom: 2px; letter-spacing: .04em; }
+      .btnrow { display: flex; gap: 10px; margin-top: 6px; }
+      .screen button {
+        flex: 1; padding: 12px; border: 0; border-radius: 10px; cursor: pointer; font-size: 14.5px; font-weight: 700;
+      }
+      button.primary { background: #6a5cff; color: #fff; }
+      button.primary:hover { background: #7d70ff; }
+      button.ghost { background: #232640; color: #cfd2ee; border: 1px solid #3a3f66 !important; }
+      button.ghost:hover { background: #2c3050; }
+      .topbar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; }
+      .topbar button { flex: none; padding: 7px 11px; font-size: 12px; font-weight: 600; background: #232640; color: #cfd2ee; }
+      .topbar button:hover { background: #2c3050; }
+      .bignum { font-size: 52px; font-weight: 800; color: #ffd65a; margin: 6px 0; }
+      .bignum .lbl { display: block; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #9aa0c9; font-weight: 600; }
+      .usage { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin: 10px 0 4px; font-size: 13px; color: #c7c9e0; }
+      .usage span b { color: #fff; }
+      .status { min-height: 18px; font-size: 12.5px; margin: 8px 0 2px; }
+      .status.ok { color: #7cffd4; } .status.fail { color: #ff9db0; }
+      .lb { margin: 8px 0 4px; max-height: 320px; overflow-y: auto; }
+      .lb-row {
+        display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 8px;
+        padding: 9px 12px; border-radius: 9px; font-size: 14px;
+      }
+      .lb-row + .lb-row { margin-top: 4px; }
+      .lb-row.head { color: #9aa0c9; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 4px 12px; }
+      .lb-row.odd { background: rgba(255,255,255,.03); }
+      .lb-row.you { background: rgba(106,92,255,.22); border: 1px solid #6a5cff; }
+      .lb-row .rank { color: #8ff0d4; font-weight: 700; text-align: center; }
+      .lb-row .name { text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .lb-row .tok { color: #ffd65a; font-weight: 700; }
+      .foot-note { margin-top: 14px; font-size: 12px; color: #8b90b8; }
     </style>
   </head>
   <body>
     <div id="app"></div>
+    <div id="screen-layer"><div id="screen-host"></div></div>
     <div id="card-layer"><div id="card-host"></div></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

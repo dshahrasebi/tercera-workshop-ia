@@ -56,9 +56,25 @@
     "approxCostUsd": 0.07
   },
   {
+    "name": "boss",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single large menacing dungeon boss, a towering corrupted guardian golem fused with glowing circuitry and a single great glowing magenta eye, stone and metal body, front view, full body Place the subject centered with margin on a solid flat uniform bright magenta (#ff00ff) background that completely fills the frame; no gradient, no vignette, no shadow, no ground plane, dark crisp outline around the subject.",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
     "name": "room",
     "model": "gpt-image-2",
     "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. top-down dungeon chamber floor of cracked stone tiles with moss and a glowing rune circle in the center, stone walls framing all four edges, atmospheric torch lighting, full-screen scene background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
+    "name": "title",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. epic key-art title screen for a top-down pixel adventure, a lone hooded hero with a glowing teal sword standing before a vast ancient dungeon gate crackling with magenta energy, dramatic atmospheric lighting, cinematic, no text",
     "quality": "high",
     "size": "1024x1024",
     "approxCostUsd": 0.17

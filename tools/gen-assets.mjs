@@ -46,8 +46,12 @@ const ASSETS = [
     prompt: "a single glowing golden coin token stamped with a small circuit / AI chip motif, front view" },
   { name: "chest", max: 140, quality: "medium", chroma: true,
     prompt: "a single closed ornate wooden treasure chest with gold trim and a keyhole, three-quarter front view" },
+  { name: "boss", max: 320, quality: "high", chroma: true,
+    prompt: "a single large menacing dungeon boss, a towering corrupted guardian golem fused with glowing circuitry and a single great glowing magenta eye, stone and metal body, front view, full body" },
   { name: "room", max: 1024, quality: "high", background: "opaque",
     prompt: "top-down dungeon chamber floor of cracked stone tiles with moss and a glowing rune circle in the center, stone walls framing all four edges, atmospheric torch lighting, full-screen scene background" },
+  { name: "title", max: 1024, quality: "high", background: "opaque",
+    prompt: "epic key-art title screen for a top-down pixel adventure, a lone hooded hero with a glowing teal sword standing before a vast ancient dungeon gate crackling with magenta energy, dramatic atmospheric lighting, cinematic, no text" },
 ];
 
 async function generate(a) {

@@ -8,7 +8,7 @@ export const PLAYER_MAX_HEARTS = 5;
 export const PLAYER_IFRAMES_MS = 850;
 export const ATTACK_COOLDOWN_MS = 320;
 
-export const START_TOKENS = 120;
+export const START_TOKENS = 150;
 
 export const ENEMY_HP = 26;
 export const ENEMY_SPEED = 62;
@@ -17,6 +17,15 @@ export const ENEMY_COUNT = 3;
 export const ENEMY_KILL_REWARD = 45;
 
 export const CHEST_REWARD = 70;
+
+// Boss (final mission).
+export const BOSS_HP = 420;
+export const BOSS_SPEED = 44;
+export const BOSS_REWARD = 200;
+export const BOSS_CHARGE_INTERVAL_MS = 3400;
+export const BOSS_CHARGE_SPEED = 330;
+export const BOSS_PROJECTILE_INTERVAL_MS = 2500;
+export const BOSS_PROJECTILE_SPEED = 175;
 
 // Painted room has walls around the edge; keep the player off them.
 export const WALL_INSET = 82;

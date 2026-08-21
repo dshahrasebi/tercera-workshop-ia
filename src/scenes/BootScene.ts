@@ -18,6 +18,8 @@ const IMAGE_KEYS = [
   "token",
   "chest",
   "room",
+  "boss",
+  "title",
 ];
 
 // Fallback tints if an asset failed to generate — game still runs.
@@ -30,6 +32,8 @@ const PLACEHOLDER: Record<string, number> = {
   token: 0xffcf3f,
   chest: 0xc98a3a,
   room: 0x1a2033,
+  boss: 0xff4bd8,
+  title: 0x241a2e,
 };
 
 export class BootScene extends Phaser.Scene {
@@ -72,7 +76,16 @@ export class BootScene extends Phaser.Scene {
     slash.generateTexture("slash", 64, 64);
     slash.destroy();
 
+    // Boss projectile orb.
+    const orb = this.make.graphics({ x: 0, y: 0 }, false);
+    orb.fillStyle(0xff4bd8, 0.35);
+    orb.fillCircle(12, 12, 12);
+    orb.fillStyle(0xff8cf0, 1);
+    orb.fillCircle(12, 12, 6);
+    orb.generateTexture("orb", 24, 24);
+    orb.destroy();
+
     this.registry.set("credits", (this.cache.json.get("credits") as Credit[]) ?? []);
-    this.scene.start("demo");
+    this.scene.start("title");
   }
 }
