@@ -85,6 +85,22 @@ export class BootScene extends Phaser.Scene {
     orb.generateTexture("orb", 24, 24);
     orb.destroy();
 
+    // Soft radial glow for the hero aura — a real gradient so it reads on any
+    // GPU/renderer (postFX glow is WebGL-pipeline dependent and can silently no-op).
+    const glowSize = 128;
+    const glowTex = this.textures.createCanvas("glow", glowSize, glowSize);
+    if (glowTex) {
+      const gctx = glowTex.getContext();
+      const r = glowSize / 2;
+      const grad = gctx.createRadialGradient(r, r, 0, r, r, r);
+      grad.addColorStop(0, "rgba(255,255,255,1)");
+      grad.addColorStop(0.45, "rgba(255,255,255,0.5)");
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      gctx.fillStyle = grad;
+      gctx.fillRect(0, 0, glowSize, glowSize);
+      glowTex.refresh();
+    }
+
     this.registry.set("credits", (this.cache.json.get("credits") as Credit[]) ?? []);
     this.scene.start("title");
   }

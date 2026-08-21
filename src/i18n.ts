@@ -13,8 +13,8 @@ const S: Dict = {
   hud_weapon: { es: "Arma", en: "Weapon" },
   hud_cost: { es: "coste", en: "cost" },
   hint: {
-    es: "WASD / flechas mover · ESPACIO atacar · 1·2·3 cambiar arma · E abrir cofre · TAB idioma",
-    en: "WASD / arrows move · SPACE attack · 1·2·3 switch weapon · E open chest · TAB language",
+    es: "WASD / flechas mover · CLIC o ESPACIO atacar (apunta con el ratón) · 1·2·3 arma · E cofre · TAB idioma",
+    en: "WASD / arrows move · CLICK or SPACE attack (aim with mouse) · 1·2·3 weapon · E chest · TAB language",
   },
   no_tokens: { es: "¡Sin tokens suficientes!", en: "Not enough tokens!" },
   continue: { es: "Continuar", en: "Continue" },

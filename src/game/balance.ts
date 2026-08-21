@@ -29,3 +29,14 @@ export const BOSS_PROJECTILE_SPEED = 175;
 
 // Painted room has walls around the edge; keep the player off them.
 export const WALL_INSET = 82;
+
+// Combat hit radii — sized to the *visible* character, not the transparent-padded
+// sprite frame, so touch/reach feel fair instead of hitting from empty pixels.
+export const PLAYER_RADIUS = 19;
+export const ENEMY_RADIUS = 22;
+export const BOSS_RADIUS = 58;
+export const ORB_RADIUS = 12;
+
+// Knockback impulses (kept punchy but not floaty — big values feel like losing control).
+export const PLAYER_HURT_KNOCKBACK = 170;
+export const ENEMY_HIT_KNOCKBACK = 180;

@@ -13,6 +13,12 @@ import {
   ENEMY_KILL_REWARD,
   CHEST_REWARD,
   WALL_INSET,
+  PLAYER_RADIUS,
+  ENEMY_RADIUS,
+  BOSS_RADIUS,
+  ORB_RADIUS,
+  PLAYER_HURT_KNOCKBACK,
+  ENEMY_HIT_KNOCKBACK,
   BOSS_HP,
   BOSS_SPEED,
   BOSS_REWARD,
@@ -33,6 +39,8 @@ type BossState = "chase" | "telegraph" | "charge";
 
 export class GameScene extends Phaser.Scene {
   private player!: Sprite;
+  private playerShadow!: Phaser.GameObjects.Ellipse;
+  private playerGlow!: Phaser.GameObjects.Image;
   private guardians!: Sprite[];
   private boss?: Sprite;
   private orbs: Sprite[] = [];
@@ -108,10 +116,24 @@ export class GameScene extends Phaser.Scene {
     this.chest = this.add.image(WALL_INSET + 70, WALL_INSET + 60, "chest").setDepth(10);
     fitHeight(this.chest, 66);
 
-    // Player.
+    // Player. A soft shadow, a glowing aura, and (on capable GPUs) an FX glow make
+    // the hero read clearly against busy painted rooms.
+    this.playerShadow = this.add.ellipse(0, 0, 46, 16, 0x000000, 0.33).setDepth(2);
+    this.playerGlow = this.add
+      .image(0, 0, "glow")
+      .setTint(0x8affe0)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setDepth(11)
+      .setDisplaySize(150, 150)
+      .setAlpha(0.6);
+    this.tweens.add({ targets: this.playerGlow, alpha: 0.85, yoyo: true, repeat: -1, duration: 900, ease: "Sine.inOut" });
     this.player = this.physics.add.sprite(GAME_W / 2, GAME_H - WALL_INSET - 40, "hero");
     this.player.setDepth(12).setCollideWorldBounds(true);
-    fitHeight(this.player, 78);
+    fitHeight(this.player, 88);
+    this.player.setData("radius", PLAYER_RADIUS);
+    if (this.renderer.type === Phaser.WEBGL) {
+      this.player.postFX.addGlow(0x8affe0, 4, 0, false, 0.1, 14);
+    }
 
     // Guardians (mission 1).
     this.guardians = [];
@@ -140,17 +162,24 @@ export class GameScene extends Phaser.Scene {
     e.setData("hp", ENEMY_HP);
     e.setData("maxHp", ENEMY_HP);
     e.setData("barW", 44);
+    e.setData("radius", ENEMY_RADIUS);
     this.bars.set(e, this.add.graphics().setDepth(40));
     this.guardians.push(e);
   }
 
   private bindInput() {
     const kb = this.input.keyboard!;
-    kb.addCapture(["SPACE", "TAB", "ONE", "TWO", "THREE"]);
+    // Capture movement/action keys so arrows & space don't scroll the page.
+    kb.addCapture(["SPACE", "TAB", "ONE", "TWO", "THREE", "UP", "DOWN", "LEFT", "RIGHT"]);
     this.keys = kb.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as Record<string, Phaser.Input.Keyboard.Key>;
 
+    // SPACE attacks in the direction you're facing; click/tap attacks toward the cursor
+    // (full 360° — diagonal and sideways included).
     kb.on("keydown-SPACE", () => this.attack());
-    this.input.on("pointerdown", () => this.attack());
+    this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
+      const dir = new Phaser.Math.Vector2(p.worldX - this.player.x, p.worldY - this.player.y);
+      this.attack(dir.lengthSq() > 4 ? dir : undefined);
+    });
     kb.on("keydown-ONE", () => this.selectWeapon(0));
     kb.on("keydown-TWO", () => this.selectWeapon(1));
     kb.on("keydown-THREE", () => this.selectWeapon(2));
@@ -234,6 +263,10 @@ export class GameScene extends Phaser.Scene {
   // ---------- gameplay ----------
 
   update(time: number) {
+    // Keep the shadow + aura glued to the hero (also while paused on a card).
+    this.playerShadow.setPosition(this.player.x, this.player.y + this.player.displayHeight * 0.34);
+    this.playerGlow.setPosition(this.player.x, this.player.y);
+
     if (this.locked) {
       this.player.setVelocity(0, 0);
       return;
@@ -261,7 +294,7 @@ export class GameScene extends Phaser.Scene {
       this.physics.moveToObject(e, this.player, ENEMY_SPEED);
       this.drawHpBar(e);
       const d = Phaser.Math.Distance.Between(e.x, e.y, this.player.x, this.player.y);
-      if (d < e.displayHeight * 0.45 + this.player.displayHeight * 0.4) {
+      if (d < this.radiusOf(e) + PLAYER_RADIUS) {
         this.hurtPlayer(e, time);
       }
     }
@@ -293,6 +326,7 @@ export class GameScene extends Phaser.Scene {
     b.setData("hp", BOSS_HP);
     b.setData("maxHp", BOSS_HP);
     b.setData("barW", 130);
+    b.setData("radius", BOSS_RADIUS);
     b.setData("boss", true);
     this.bars.set(b, this.add.graphics().setDepth(40));
     this.boss = b;
@@ -344,7 +378,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     const d = Phaser.Math.Distance.Between(b.x, b.y, this.player.x, this.player.y);
-    if (d < b.displayHeight * 0.42 + this.player.displayHeight * 0.4) this.hurtPlayer(b, time);
+    if (d < BOSS_RADIUS + PLAYER_RADIUS) this.hurtPlayer(b, time);
   }
 
   private fireOrb() {
@@ -365,7 +399,7 @@ export class GameScene extends Phaser.Scene {
         continue;
       }
       const d = Phaser.Math.Distance.Between(orb.x, orb.y, this.player.x, this.player.y);
-      if (d < 16 + this.player.displayHeight * 0.34) {
+      if (d < ORB_RADIUS + PLAYER_RADIUS) {
         this.burst(orb.x, orb.y, 0xff8cf0, 8);
         orb.destroy();
         this.hurtPlayer(orb, time);
@@ -388,7 +422,7 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private attack() {
+  private attack(aim?: Phaser.Math.Vector2) {
     if (this.locked || this.time.now < this.nextAttackAt) return;
     const w = this.weapon;
     if (this.tokens < w.cost) {
@@ -397,16 +431,21 @@ export class GameScene extends Phaser.Scene {
       play("deny");
       return;
     }
+    // Aim toward the cursor when clicking, else the way you're moving/facing.
+    const dir = aim && aim.lengthSq() > 0 ? aim.clone().normalize() : this.facing.clone().normalize();
+    this.facing.copy(dir);
+    this.player.setFlipX(dir.x < -0.05);
+
     this.nextAttackAt = this.time.now + ATTACK_COOLDOWN_MS;
     this.tokens -= w.cost;
     this.weaponUsage[w.id] = (this.weaponUsage[w.id] ?? 0) + 1;
     this.refreshHud();
     play("attack");
 
-    this.spawnSlash(w);
+    this.spawnSlash(w, dir);
     this.tweens.add({ targets: this.player, scaleX: this.player.scaleX * 1.08, yoyo: true, duration: 80 });
 
-    const hit = this.enemiesInReach(w);
+    const hit = this.enemiesInReach(w, dir);
     for (const e of hit) this.damageEnemy(e, w.damage);
     if (hit.length) {
       this.hitStop();
@@ -421,18 +460,23 @@ export class GameScene extends Phaser.Scene {
     return a;
   }
 
-  private enemiesInReach(w: Weapon): Sprite[] {
+  private radiusOf(e: Sprite): number {
+    return (e.getData("radius") as number) || ENEMY_RADIUS;
+  }
+
+  private enemiesInReach(w: Weapon, dir: Phaser.Math.Vector2): Sprite[] {
     const out: Sprite[] = [];
     let nearest: Sprite | null = null;
     let nearestD = Infinity;
     for (const e of this.activeTargets()) {
       const d = Phaser.Math.Distance.Between(this.player.x, this.player.y, e.x, e.y);
-      if (d > w.range) continue;
+      if (d > w.range + this.radiusOf(e)) continue;
       if (w.aoe) {
         out.push(e);
       } else {
+        // ~200° arc toward the aim — diagonal & sideways hits register, only your back is safe.
         const to = new Phaser.Math.Vector2(e.x - this.player.x, e.y - this.player.y).normalize();
-        if (to.dot(this.facing) > 0.25 && d < nearestD) {
+        if (to.dot(dir) >= -0.2 && d < nearestD) {
           nearest = e;
           nearestD = d;
         }
@@ -452,7 +496,7 @@ export class GameScene extends Phaser.Scene {
       if (e.active) e.clearTint();
     });
     if (!e.getData("boss")) {
-      const kb = new Phaser.Math.Vector2(e.x - this.player.x, e.y - this.player.y).normalize().scale(220);
+      const kb = new Phaser.Math.Vector2(e.x - this.player.x, e.y - this.player.y).normalize().scale(ENEMY_HIT_KNOCKBACK);
       e.setVelocity(kb.x, kb.y);
     }
     if (hp <= 0) this.killTarget(e);
@@ -487,7 +531,7 @@ export class GameScene extends Phaser.Scene {
     this.refreshHud();
     this.cameras.main.shake(120, 0.006);
     play("hurt");
-    const kb = new Phaser.Math.Vector2(this.player.x - from.x, this.player.y - from.y).normalize().scale(260);
+    const kb = new Phaser.Math.Vector2(this.player.x - from.x, this.player.y - from.y).normalize().scale(PLAYER_HURT_KNOCKBACK);
     this.player.setVelocity(kb.x, kb.y);
     this.tweens.add({ targets: this.player, alpha: 0.35, yoyo: true, repeat: 3, duration: 100, onComplete: () => this.player.setAlpha(1) });
     if (this.hearts <= 0) this.onDefeat();
@@ -510,13 +554,13 @@ export class GameScene extends Phaser.Scene {
 
   // ---------- fx ----------
 
-  private spawnSlash(w: Weapon) {
+  private spawnSlash(w: Weapon, dir: Phaser.Math.Vector2) {
     const off = w.range * 0.5;
     const s = this.add
-      .image(this.player.x + this.facing.x * off, this.player.y + this.facing.y * off, "slash")
+      .image(this.player.x + dir.x * off, this.player.y + dir.y * off, "slash")
       .setDepth(20)
       .setTint(w.color)
-      .setRotation(Math.atan2(this.facing.y, this.facing.x))
+      .setRotation(Math.atan2(dir.y, dir.x))
       .setScale(w.range / 55);
     this.tweens.add({ targets: s, alpha: 0, scale: s.scale * 1.25, duration: 180, onComplete: () => s.destroy() });
   }
