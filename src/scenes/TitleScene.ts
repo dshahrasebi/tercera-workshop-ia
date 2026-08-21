@@ -31,6 +31,10 @@ export class TitleScene extends Phaser.Scene {
         hideScreen();
         this.scene.start("game");
       },
+      onLoad: () => {
+        unlockAudio();
+        play("ui");
+      },
       onLeaderboard: () => {
         unlockAudio();
         play("ui");

@@ -33,6 +33,7 @@ export interface TitleOpts {
   name: string;
   muted: boolean;
   onPlay: (name: string) => void;
+  onLoad: () => void;
   onLeaderboard: () => void;
   onToggleLang: () => void;
   onToggleSound: () => void;
@@ -49,14 +50,16 @@ export function renderTitle(o: TitleOpts): void {
       <input id="sc-name" maxlength="24" placeholder="${esc(t("title_name_ph"))}" value="${esc(o.name)}" />
       <div class="btnrow">
         <button class="primary" id="sc-play">${esc(t("title_play"))}</button>
-        <button class="ghost" id="sc-lb">${esc(t("title_leaderboard"))}</button>
+        <button class="ghost" id="sc-load" disabled title="${esc(t("title_load_empty"))}">${esc(t("title_load"))}</button>
       </div>
+      <button class="ghost menu-secondary" id="sc-lb">${esc(t("title_leaderboard"))}</button>
     </div>`;
   show();
   wireTopbar(o.onToggleLang, o.onToggleSound);
   const input = document.getElementById("sc-name") as HTMLInputElement;
   const play = () => o.onPlay(input.value.trim());
   document.getElementById("sc-play")?.addEventListener("click", play);
+  document.getElementById("sc-load")?.addEventListener("click", o.onLoad);
   document.getElementById("sc-lb")?.addEventListener("click", o.onLeaderboard);
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") play();
