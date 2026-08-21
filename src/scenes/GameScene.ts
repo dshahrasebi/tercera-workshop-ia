@@ -40,7 +40,6 @@ import {
 } from "../game/balance";
 import { WEAPONS, Weapon } from "../game/weapons";
 import { getLang, toggleLang, t } from "../i18n";
-import { showCard } from "../ui/cards";
 import { play } from "../audio/sfx";
 import type { Credit } from "./BootScene";
 
@@ -94,6 +93,14 @@ export class GameScene extends Phaser.Scene {
   private combo = 0;
   private comboUntil = 0;
 
+  // In-game notification banners (non-blocking; replace the old dark modal cards).
+  private notes: Array<{ tag: string; title: string; body?: string; color?: number; hold?: number }> = [];
+  private noteActive = false;
+  private noteBox?: Phaser.GameObjects.Container;
+  private noteState: "entering" | "holding" | "leaving" | "none" = "none";
+  private noteW = 0;
+  private noteH = 0;
+
   private keys!: Record<string, Phaser.Input.Keyboard.Key>;
 
   // HUD
@@ -132,6 +139,10 @@ export class GameScene extends Phaser.Scene {
     this.nextDashAt = 0;
     this.combo = 0;
     this.comboUntil = 0;
+    this.notes = [];
+    this.noteActive = false;
+    this.noteBox = undefined;
+    this.noteState = "none";
 
     // Room background.
     this.add.image(GAME_W / 2, GAME_H / 2, "room").setDisplaySize(GAME_W, GAME_H).setDepth(0);
@@ -527,6 +538,19 @@ export class GameScene extends Phaser.Scene {
       this.updateStreakHud();
     }
 
+    // Fade a resting banner out of the way when the hero walks under it, restore on exit.
+    if (this.noteState === "holding" && this.noteBox) {
+      const b = this.noteBox;
+      const r = 46;
+      const under =
+        this.player.x > b.x - this.noteW / 2 - r &&
+        this.player.x < b.x + this.noteW / 2 + r &&
+        this.player.y > b.y - r &&
+        this.player.y < b.y + this.noteH + r;
+      const targetAlpha = under ? 0.14 : 1;
+      b.alpha += (targetAlpha - b.alpha) * 0.15;
+    }
+
     if (this.boss && this.boss.active) this.updateBoss(time);
     this.updateOrbs(time);
   }
@@ -568,14 +592,15 @@ export class GameScene extends Phaser.Scene {
     if (this.phase !== "guardians") return;
     this.phase = "boss";
     play("boss");
-    this.withCard(async () => {
-      await showCard({
-        tag: t("boss_appears_tag"),
-        title: t("boss_appears_title"),
-        bodyHtml: t("boss_appears_body"),
-      });
-      this.spawnBoss();
+    this.refreshMission();
+    this.notify({
+      tag: t("boss_appears_tag"),
+      title: t("boss_appears_title"),
+      body: stripTags(t("boss_appears_body")),
+      color: 0xff5d3a,
+      hold: 5200,
     });
+    this.spawnBoss();
   }
 
   private spawnBoss() {
@@ -941,54 +966,116 @@ export class GameScene extends Phaser.Scene {
     g.fillStyle(e.getData("boss") ? 0xff5d3a : 0xff4bd8, 1).fillRect(x, y, (w * hp) / max, 4);
   }
 
-  // ---------- cards (pause while open) ----------
+  // ---------- in-game notifications (non-blocking banners) ----------
+  // Slide-in banner rendered inside the canvas; the game keeps running so the
+  // player never loses attention (replaces the old dark full-screen modal cards).
 
-  private async withCard(fn: () => Promise<void>) {
-    this.locked = true;
-    this.player.setVelocity(0, 0);
-    this.scene.pause();
-    try {
-      await fn();
-    } finally {
-      if (this.phase !== "done") this.locked = false;
-      this.scene.resume();
+  private notify(o: { tag: string; title: string; body?: string; color?: number; hold?: number }) {
+    this.notes.push(o);
+    if (!this.noteActive) this.showNextNote();
+  }
+
+  private showNextNote() {
+    const o = this.notes.shift();
+    if (!o) {
+      this.noteActive = false;
+      this.noteState = "none";
+      this.noteBox = undefined;
+      return;
     }
+    this.noteActive = true;
+    const color = o.color ?? 0x8ff0d4;
+    const W = 600;
+    const pad = 16;
+    const inner = W - pad * 2;
+
+    const tag = this.add
+      .text(0, pad, o.tag.toUpperCase(), { fontFamily: "system-ui", fontSize: "11px", color: hex(color) })
+      .setOrigin(0.5, 0);
+    const title = this.add
+      .text(0, 0, o.title, { fontFamily: "system-ui", fontSize: "18px", color: "#ffffff", fontStyle: "bold", align: "center", wordWrap: { width: inner } })
+      .setOrigin(0.5, 0);
+    const body = o.body
+      ? this.add
+          .text(0, 0, o.body, { fontFamily: "system-ui", fontSize: "13px", color: "#c7c9e0", align: "center", wordWrap: { width: inner }, lineSpacing: 4 })
+          .setOrigin(0.5, 0)
+      : null;
+
+    let y = pad + tag.height + 5;
+    title.setY(y);
+    y += title.height;
+    if (body) {
+      y += 7;
+      body.setY(y);
+      y += body.height;
+    }
+    const H = y + pad;
+
+    const bg = this.add.graphics();
+    bg.fillStyle(0x0a0f18, 0.92).fillRoundedRect(-W / 2, 0, W, H, 14);
+    bg.lineStyle(2, color, 0.85).strokeRoundedRect(-W / 2, 0, W, H, 14);
+    bg.fillStyle(color, 1).fillRect(-W / 2 + 3, 12, 4, H - 24); // accent stripe
+
+    const kids: Phaser.GameObjects.GameObject[] = body ? [bg, tag, title, body] : [bg, tag, title];
+    const box = this.add.container(GAME_W / 2, 46, kids).setDepth(120).setAlpha(0);
+    this.noteBox = box;
+    this.noteW = W;
+    this.noteH = H;
+    this.noteState = "entering";
+
+    const hold = o.hold ?? 4200;
+    this.tweens.add({
+      targets: box,
+      y: 58,
+      alpha: 1,
+      duration: 240,
+      ease: "Back.out",
+      onComplete: () => {
+        this.noteState = "holding";
+        this.time.delayedCall(hold, () => this.leaveNote(box));
+      },
+    });
+  }
+
+  private leaveNote(box: Phaser.GameObjects.Container) {
+    if (this.noteBox !== box) return;
+    this.noteState = "leaving";
+    this.tweens.add({
+      targets: box,
+      y: 44,
+      alpha: 0,
+      duration: 260,
+      ease: "Quad.in",
+      onComplete: () => {
+        box.destroy();
+        if (this.noteBox === box) this.noteBox = undefined;
+        this.showNextNote();
+      },
+    });
   }
 
   private showIntro() {
-    this.withCard(() =>
-      showCard({ tag: t("intro_tag"), title: t("intro_title"), bodyHtml: t("intro_body") })
-    );
+    this.notify({ tag: t("intro_tag"), title: t("intro_title"), body: stripTags(t("intro_body")), hold: 7000 });
   }
 
   private showWeaponCard(w: Weapon) {
-    this.withCard(() =>
-      showCard({
-        tag: t("weapon_tag"),
-        title: `${w.label[getLang()]} — ${w.tier[getLang()]}`,
-        bodyHtml: w.blurb[getLang()],
-        meta: [{ k: t("hud_cost"), v: `${w.cost} tokens` }],
-      })
-    );
+    this.notify({
+      tag: t("weapon_tag"),
+      title: `${w.label[getLang()]} — ${w.tier[getLang()]}`,
+      body: `${stripTags(w.blurb[getLang()])}\n${t("hud_cost")} ${w.cost} tokens`,
+      color: w.color,
+      hold: 4600,
+    });
   }
 
   private showChestCard() {
     const credit = (this.registry.get("credits") as Credit[]).find((c) => c.name === "chest");
-    this.withCard(() =>
-      showCard({
-        tag: t("chest_tag"),
-        title: t("chest_title"),
-        bodyHtml: t("chest_body"),
-        prompt: credit?.prompt,
-        meta: credit
-          ? [
-              { k: t("meta_model"), v: credit.model },
-              { k: t("meta_quality"), v: credit.quality },
-              { k: t("meta_cost"), v: credit.approxCostUsd != null ? `$${credit.approxCostUsd}` : "—" },
-            ]
-          : [],
-      })
-    );
+    const lines = [stripTags(t("chest_body"))];
+    if (credit) {
+      if (credit.prompt) lines.push(`“${credit.prompt.slice(0, 150)}${credit.prompt.length > 150 ? "…" : ""}”`);
+      lines.push(`${t("meta_model")}: ${credit.model} · ${t("meta_cost")}: ${credit.approxCostUsd != null ? `$${credit.approxCostUsd}` : "—"}`);
+    }
+    this.notify({ tag: t("chest_tag"), title: t("chest_title"), body: lines.join("\n"), hold: 6500 });
   }
 
   private onVictory() {
@@ -1024,4 +1111,9 @@ function fitScale(obj: { height: number }, target: number): number {
 
 function hex(n: number): string {
   return "#" + n.toString(16).padStart(6, "0");
+}
+
+// The i18n bodies carry <b> tags for the DOM screens; strip them for canvas text.
+function stripTags(s: string): string {
+  return s.replace(/<[^>]+>/g, "");
 }
