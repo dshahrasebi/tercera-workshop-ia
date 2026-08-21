@@ -1,0 +1,66 @@
+[
+  {
+    "name": "hero",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single young hero character in a teal hooded cloak holding a short glowing sword, front view, full body, centered, plain background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
+    "name": "enemy",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single small menacing corrupted slime-bot creature with glowing magenta eyes and metal shards, front view Place the subject centered with margin on a solid flat uniform bright magenta (#ff00ff) background that completely fills the frame; no gradient, no vignette, no shadow, no ground plane, dark crisp outline around the subject.",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
+    "name": "weapon_nano",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single tiny simple dagger item icon with a faint green glow, blade pointing up Place the subject centered with margin on a solid flat uniform bright magenta (#ff00ff) background that completely fills the frame; no gradient, no vignette, no shadow, no ground plane, dark crisp outline around the subject.",
+    "quality": "medium",
+    "size": "1024x1024",
+    "approxCostUsd": 0.07
+  },
+  {
+    "name": "weapon_standard",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single balanced steel sword item icon glowing blue, centered, plain background",
+    "quality": "medium",
+    "size": "1024x1024",
+    "approxCostUsd": 0.07
+  },
+  {
+    "name": "weapon_frontier",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single ornate powerful greatsword item icon radiating golden energy, centered, plain background",
+    "quality": "medium",
+    "size": "1024x1024",
+    "approxCostUsd": 0.07
+  },
+  {
+    "name": "token",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single glowing golden coin token stamped with a small circuit / AI chip motif, centered, plain background",
+    "quality": "medium",
+    "size": "1024x1024",
+    "approxCostUsd": 0.07
+  },
+  {
+    "name": "chest",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. a single closed ornate wooden treasure chest with gold trim and a keyhole, three-quarter front view Place the subject centered with margin on a solid flat uniform bright magenta (#ff00ff) background that completely fills the frame; no gradient, no vignette, no shadow, no ground plane, dark crisp outline around the subject.",
+    "quality": "medium",
+    "size": "1024x1024",
+    "approxCostUsd": 0.07
+  },
+  {
+    "name": "room",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. top-down dungeon chamber floor of cracked stone tiles with moss and a glowing rune circle in the center, stone walls framing all four edges, atmospheric torch lighting, full-screen scene background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "name": "token-quest",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Token Quest — a Zelda-like where tokens are your score and weapons are LLM grades. 100% made with AI for the AI workshop.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173",
+    "gen": "node --env-file=.env tools/gen-assets.mjs"
+  },
+  "dependencies": {
+    "phaser": "^3.80.1"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.4",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}
