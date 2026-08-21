@@ -20,6 +20,12 @@ const IMAGE_KEYS = [
   "room",
   "boss",
   "title",
+  "village",
+  "plains",
+  "forest",
+  "desert",
+  "mountain",
+  "fortress",
 ];
 
 // Fallback tints if an asset failed to generate — game still runs.
@@ -34,6 +40,12 @@ const PLACEHOLDER: Record<string, number> = {
   room: 0x1a2033,
   boss: 0xff4bd8,
   title: 0x241a2e,
+  village: 0x315b53,
+  plains: 0x6b7542,
+  forest: 0x173f35,
+  desert: 0x9b7040,
+  mountain: 0x566579,
+  fortress: 0x2d2440,
 };
 
 export class BootScene extends Phaser.Scene {

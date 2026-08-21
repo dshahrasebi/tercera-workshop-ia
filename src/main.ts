@@ -4,6 +4,7 @@ import { BootScene } from "./scenes/BootScene";
 import { TitleScene } from "./scenes/TitleScene";
 import { GameScene } from "./scenes/GameScene";
 import { ResultScene } from "./scenes/ResultScene";
+import { WorldScene } from "./scenes/WorldScene";
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -15,7 +16,7 @@ const game = new Phaser.Game({
   roundPixels: true,
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   physics: { default: "arcade", arcade: { debug: false } },
-  scene: [BootScene, TitleScene, GameScene, ResultScene],
+  scene: [BootScene, TitleScene, WorldScene, GameScene, ResultScene],
 });
 
 // Expose the running game for debugging / smoke tests. Harmless (no secrets client-side).

@@ -78,5 +78,53 @@
     "quality": "high",
     "size": "1024x1024",
     "approxCostUsd": 0.17
+  },
+  {
+    "name": "village",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. peaceful top-down pixel art village plaza at sunrise, warm stone paths, small houses, market stalls, fountain, trees and four clear paths leading off the screen, welcoming story-game hub, full-screen background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
+    "name": "plains",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. top-down pixel art golden plains crossroads, grass, wildflowers, ancient standing stones, a clear path entering from all four screen edges, distant hills, calm adventure game environment, full-screen background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
+    "name": "forest",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. top-down pixel art enchanted forest clearing, tall trees, moss, ferns, lanterns and a clear path entering from all four screen edges, peaceful but mysterious adventure game environment, full-screen background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
+    "name": "desert",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. top-down pixel art desert oasis crossroads, dunes, palms, sandstone ruins, shallow water and a clear path entering from all four screen edges, warm sunset adventure game environment, full-screen background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
+    "name": "mountain",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. top-down pixel art mountain foothill settlement, stone paths, pine trees, cliffs, wooden cabins and a clear path entering from all four screen edges, dramatic clean adventure game environment, full-screen background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
+  },
+  {
+    "name": "fortress",
+    "model": "gpt-image-2",
+    "prompt": "Premium 2D pixel art game asset, top-down action-adventure, inspired by Hyper Light Drifter and classic Zelda, clean limited cohesive palette, crisp readable pixels, soft rim lighting, high quality, no text, no watermark. top-down pixel art ancient final fortress courtyard, enormous sealed gate, cracked stone, teal runes, magenta corruption and a clear central approach, dramatic adventure game environment, full-screen background",
+    "quality": "high",
+    "size": "1024x1024",
+    "approxCostUsd": 0.17
   }
 ]

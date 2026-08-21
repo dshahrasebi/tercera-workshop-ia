@@ -52,6 +52,18 @@ const ASSETS = [
     prompt: "top-down dungeon chamber floor of cracked stone tiles with moss and a glowing rune circle in the center, stone walls framing all four edges, atmospheric torch lighting, full-screen scene background" },
   { name: "title", max: 1024, quality: "high", background: "opaque",
     prompt: "epic key-art title screen for a top-down pixel adventure, a lone hooded hero with a glowing teal sword standing before a vast ancient dungeon gate crackling with magenta energy, dramatic atmospheric lighting, cinematic, no text" },
+  { name: "village", max: 1024, quality: "high", background: "opaque",
+    prompt: "peaceful top-down pixel art village plaza at sunrise, warm stone paths, small houses, market stalls, fountain, trees and four clear paths leading off the screen, welcoming story-game hub, full-screen background" },
+  { name: "plains", max: 1024, quality: "high", background: "opaque",
+    prompt: "top-down pixel art golden plains crossroads, grass, wildflowers, ancient standing stones, a clear path entering from all four screen edges, distant hills, calm adventure game environment, full-screen background" },
+  { name: "forest", max: 1024, quality: "high", background: "opaque",
+    prompt: "top-down pixel art enchanted forest clearing, tall trees, moss, ferns, lanterns and a clear path entering from all four screen edges, peaceful but mysterious adventure game environment, full-screen background" },
+  { name: "desert", max: 1024, quality: "high", background: "opaque",
+    prompt: "top-down pixel art desert oasis crossroads, dunes, palms, sandstone ruins, shallow water and a clear path entering from all four screen edges, warm sunset adventure game environment, full-screen background" },
+  { name: "mountain", max: 1024, quality: "high", background: "opaque",
+    prompt: "top-down pixel art mountain foothill settlement, stone paths, pine trees, cliffs, wooden cabins and a clear path entering from all four screen edges, dramatic clean adventure game environment, full-screen background" },
+  { name: "fortress", max: 1024, quality: "high", background: "opaque",
+    prompt: "top-down pixel art ancient final fortress courtyard, enormous sealed gate, cracked stone, teal runes, magenta corruption and a clear central approach, dramatic adventure game environment, full-screen background" },
 ];
 
 async function generate(a) {

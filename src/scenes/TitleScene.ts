@@ -29,7 +29,7 @@ export class TitleScene extends Phaser.Scene {
         unlockAudio();
         play("ui");
         hideScreen();
-        this.scene.start("game");
+        this.scene.start("world", { map: "village" });
       },
       onLoad: () => {
         unlockAudio();
