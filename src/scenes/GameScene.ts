@@ -43,8 +43,10 @@ export class GameScene extends Phaser.Scene {
   private playerGlow!: Phaser.GameObjects.Image;
   private playerPlate!: Phaser.GameObjects.Ellipse;
   private playerCore!: Phaser.GameObjects.Ellipse;
+  private playerTrail!: Phaser.GameObjects.Particles.ParticleEmitter;
   private guardians!: Sprite[];
   private boss?: Sprite;
+  private bossTelegraph?: Phaser.GameObjects.Ellipse;
   private orbs: Sprite[] = [];
   private layoutWalls: Phaser.GameObjects.Rectangle[] = [];
   private bars = new WeakMap<Sprite, Phaser.GameObjects.Graphics>();
@@ -130,6 +132,20 @@ export class GameScene extends Phaser.Scene {
       .setDisplaySize(150, 150)
       .setAlpha(0.24);
     this.tweens.add({ targets: this.playerGlow, alpha: 0.34, yoyo: true, repeat: -1, duration: 900, ease: "Sine.inOut" });
+    this.playerTrail = this.add
+      .particles(0, 0, "spark", {
+        speed: { min: 8, max: 28 },
+        angle: { min: 0, max: 360 },
+        lifespan: 360,
+        frequency: 32,
+        scale: { start: 0.9, end: 0 },
+        alpha: { start: 0.85, end: 0 },
+        tint: 0x8affe0,
+        blendMode: Phaser.BlendModes.ADD,
+        maxParticles: 80,
+        emitting: false,
+      })
+      .setDepth(9);
     this.playerCore = this.add
       .ellipse(0, 0, 66, 78, 0x8affe0, 0.1)
       .setStrokeStyle(2, 0xc9fff3, 0.86)
@@ -179,6 +195,16 @@ export class GameScene extends Phaser.Scene {
     e.setData("barW", 44);
     e.setData("radius", ENEMY_RADIUS);
     this.addLayoutColliders(e);
+    this.tweens.add({
+      targets: e,
+      scaleX: e.scaleX * 1.04,
+      scaleY: e.scaleY * 0.96,
+      yoyo: true,
+      repeat: -1,
+      duration: 620 + this.guardians.length * 90,
+      ease: "Sine.inOut",
+    });
+    if (this.renderer.type === Phaser.WEBGL) e.postFX.addGlow(0xff4bd8, 3, 0, false, 0.08, 10);
     this.bars.set(e, this.add.graphics().setDepth(40));
     this.guardians.push(e);
   }
@@ -319,8 +345,10 @@ export class GameScene extends Phaser.Scene {
     this.playerGlow.setPosition(this.player.x, this.player.y);
     this.playerCore.setPosition(this.player.x, this.player.y);
     this.playerPlate.setPosition(this.player.x, this.player.y + this.player.displayHeight * 0.38);
+    this.player.setAngle(Math.sin(time * 0.004) * 1.4);
 
     if (this.locked) {
+      this.playerTrail.stop();
       this.player.setVelocity(0, 0);
       return;
     }
@@ -334,10 +362,14 @@ export class GameScene extends Phaser.Scene {
     if (k.W.isDown || k.UP.isDown) vy -= 1;
     if (k.S.isDown || k.DOWN.isDown) vy += 1;
     const v = new Phaser.Math.Vector2(vx, vy);
+    this.playerTrail.setPosition(this.player.x, this.player.y + this.player.displayHeight * 0.2);
     if (v.lengthSq() > 0) {
       v.normalize();
       this.facing.copy(v);
       if (vx !== 0) this.player.setFlipX(vx < 0);
+      if (!this.playerTrail.emitting) this.playerTrail.start();
+    } else {
+      this.playerTrail.stop();
     }
     this.player.setVelocity(v.x * PLAYER_SPEED, v.y * PLAYER_SPEED);
 
@@ -383,6 +415,21 @@ export class GameScene extends Phaser.Scene {
     b.setData("boss", true);
     this.addLayoutColliders(b);
     this.bars.set(b, this.add.graphics().setDepth(40));
+    this.bossTelegraph = this.add
+      .ellipse(b.x, b.y, 172, 172, 0xff3030, 0.04)
+      .setStrokeStyle(3, 0xff5d3a, 0.78)
+      .setDepth(9)
+      .setVisible(false);
+    this.tweens.add({
+      targets: this.bossTelegraph,
+      scale: 1.12,
+      alpha: 0.34,
+      yoyo: true,
+      repeat: -1,
+      duration: 240,
+      ease: "Sine.inOut",
+    });
+    if (this.renderer.type === Phaser.WEBGL) b.postFX.addGlow(0xff4bd8, 5, 0, false, 0.12, 12);
     this.boss = b;
     const now = this.time.now;
     this.bossState = "chase";
@@ -398,6 +445,7 @@ export class GameScene extends Phaser.Scene {
   private updateBoss(time: number) {
     const b = this.boss!;
     this.drawHpBar(b);
+    this.bossTelegraph?.setPosition(b.x, b.y).setVisible(this.bossState === "telegraph");
 
     if (this.bossState === "chase") {
       this.physics.moveToObject(b, this.player, BOSS_SPEED);
@@ -442,6 +490,8 @@ export class GameScene extends Phaser.Scene {
     orb.setVelocity(dir.x * BOSS_PROJECTILE_SPEED, dir.y * BOSS_PROJECTILE_SPEED);
     orb.setData("dieAt", this.time.now + 4200);
     this.orbs.push(orb);
+    this.impact(b.x, b.y, 0xff8cf0, 26);
+    if (this.renderer.type === Phaser.WEBGL) orb.postFX.addGlow(0xff8cf0, 4, 0, false, 0.1, 10);
     play("attack");
   }
 
@@ -545,6 +595,7 @@ export class GameScene extends Phaser.Scene {
     e.setData("hp", hp);
     this.floating(e.x, e.y - e.displayHeight * 0.5, `-${dmg}`, "#ffffff");
     this.burst(e.x, e.y, this.weapon.color, 8);
+    this.impact(e.x, e.y, this.weapon.color, this.radiusOf(e) + 12);
     e.setTintFill(0xffffff);
     this.time.delayedCall(60, () => {
       if (e.active) e.clearTint();
@@ -563,9 +614,15 @@ export class GameScene extends Phaser.Scene {
     this.refreshHud();
     this.floating(e.x, e.y - 20, `+${reward}`, "#ffd65a");
     this.burst(e.x, e.y, 0xffd65a, isBoss ? 42 : 20);
+    this.impact(e.x, e.y, 0xffd65a, isBoss ? 92 : 38);
     this.cameras.main.shake(isBoss ? 380 : 160, isBoss ? 0.014 : 0.008);
     play("coin");
     this.bars.get(e)?.destroy();
+    this.tweens.killTweensOf(e);
+    if (isBoss && this.bossTelegraph) {
+      this.tweens.killTweensOf(this.bossTelegraph);
+      this.bossTelegraph.destroy();
+    }
     e.disableBody(true, true);
 
     if (isBoss) {
@@ -585,6 +642,7 @@ export class GameScene extends Phaser.Scene {
     this.refreshHud();
     this.cameras.main.shake(120, 0.006);
     play("hurt");
+    this.impact(this.player.x, this.player.y, 0xff5d7a, 30);
     const kb = new Phaser.Math.Vector2(this.player.x - from.x, this.player.y - from.y).normalize().scale(PLAYER_HURT_KNOCKBACK);
     this.player.setVelocity(kb.x, kb.y);
     this.tweens.add({ targets: this.player, alpha: 0.35, yoyo: true, repeat: 3, duration: 100, onComplete: () => this.player.setAlpha(1) });
@@ -610,13 +668,30 @@ export class GameScene extends Phaser.Scene {
 
   private spawnSlash(w: Weapon, dir: Phaser.Math.Vector2) {
     const off = w.range * 0.5;
+    const angle = Math.atan2(dir.y, dir.x);
     const s = this.add
       .image(this.player.x + dir.x * off, this.player.y + dir.y * off, "slash")
       .setDepth(20)
       .setTint(w.color)
-      .setRotation(Math.atan2(dir.y, dir.x))
+      .setRotation(angle)
       .setScale(w.range / 55);
     this.tweens.add({ targets: s, alpha: 0, scale: s.scale * 1.25, duration: 180, onComplete: () => s.destroy() });
+
+    const edge = this.add
+      .ellipse(
+        this.player.x + dir.x * w.range * 0.34,
+        this.player.y + dir.y * w.range * 0.34,
+        w.range * (w.aoe ? 1.15 : 0.9),
+        w.aoe ? 52 : 22,
+        w.color,
+        0.12
+      )
+      .setRotation(angle)
+      .setDepth(19)
+      .setBlendMode(Phaser.BlendModes.ADD);
+    edge.setStrokeStyle(w.aoe ? 5 : 4, 0xffffff, 0.96);
+    this.tweens.add({ targets: edge, scale: 1.24, alpha: 0, duration: 180, onComplete: () => edge.destroy() });
+    if (w.aoe) this.impact(this.player.x + dir.x * off, this.player.y + dir.y * off, w.color, w.range * 0.9);
   }
 
   private burst(x: number, y: number, color: number, qty: number) {
@@ -631,6 +706,22 @@ export class GameScene extends Phaser.Scene {
     p.setDepth(30);
     p.explode(qty);
     this.time.delayedCall(420, () => p.destroy());
+  }
+
+  private impact(x: number, y: number, color: number, radius: number) {
+    const ring = this.add
+      .circle(x, y, radius * 0.42, color, 0.08)
+      .setStrokeStyle(2, color, 0.9)
+      .setDepth(18)
+      .setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({
+      targets: ring,
+      scale: 1.8,
+      alpha: 0,
+      duration: 220,
+      ease: "Cubic.out",
+      onComplete: () => ring.destroy(),
+    });
   }
 
   private floating(x: number, y: number, text: string, color: string) {
