@@ -11,6 +11,17 @@ import {
   ENEMY_SPEED,
   ENEMY_COUNT,
   ENEMY_KILL_REWARD,
+  ENEMY_LUNGE_RANGE,
+  ENEMY_LUNGE_INTERVAL_MS,
+  ENEMY_LUNGE_TELEGRAPH_MS,
+  ENEMY_LUNGE_SPEED,
+  ENEMY_LUNGE_DURATION_MS,
+  DASH_SPEED,
+  DASH_DURATION_MS,
+  DASH_COOLDOWN_MS,
+  DASH_IFRAMES_MS,
+  COMBO_WINDOW_MS,
+  COMBO_BONUS_TOKENS,
   CHEST_REWARD,
   WALL_INSET,
   PLAYER_RADIUS,
@@ -50,6 +61,7 @@ export class GameScene extends Phaser.Scene {
   private orbs: Sprite[] = [];
   private layoutWalls: Phaser.GameObjects.Rectangle[] = [];
   private bars = new WeakMap<Sprite, Phaser.GameObjects.Graphics>();
+  private auras = new WeakMap<Sprite, Phaser.GameObjects.Ellipse>();
   private chest!: Phaser.GameObjects.Image;
   private chestOpened = false;
 
@@ -73,6 +85,15 @@ export class GameScene extends Phaser.Scene {
   private invulnUntil = 0;
   private locked = false; // true while a reveal card is open or the run is ending
 
+  // Dash/dodge state.
+  private dashDir = new Phaser.Math.Vector2(0, 1);
+  private dashUntil = 0;
+  private nextDashAt = 0;
+
+  // Kill-streak state.
+  private combo = 0;
+  private comboUntil = 0;
+
   private keys!: Record<string, Phaser.Input.Keyboard.Key>;
 
   // HUD
@@ -81,6 +102,7 @@ export class GameScene extends Phaser.Scene {
   private hudWeaponIcon!: Phaser.GameObjects.Image;
   private hudWeapon!: Phaser.GameObjects.Text;
   private hudMission!: Phaser.GameObjects.Text;
+  private hudStreak!: Phaser.GameObjects.Text;
   private hintText!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -106,6 +128,10 @@ export class GameScene extends Phaser.Scene {
     this.layoutWalls = [];
     this.boss = undefined;
     this.startTime = this.time.now;
+    this.dashUntil = 0;
+    this.nextDashAt = 0;
+    this.combo = 0;
+    this.comboUntil = 0;
 
     // Room background.
     this.add.image(GAME_W / 2, GAME_H / 2, "room").setDisplaySize(GAME_W, GAME_H).setDepth(0);
@@ -194,19 +220,82 @@ export class GameScene extends Phaser.Scene {
     e.setData("maxHp", ENEMY_HP);
     e.setData("barW", 44);
     e.setData("radius", ENEMY_RADIUS);
+    e.setData("state", "chase");
+    e.setData("stateUntil", 0);
+    e.setData("nextLungeAt", this.time.now + ENEMY_LUNGE_INTERVAL_MS + Math.random() * 1400);
     this.addLayoutColliders(e);
+
+    // Menacing aura rides behind the guardian and flares red just before it lunges.
+    const aura = this.add.ellipse(x, y, 58, 58, 0xff2fb0, 0.22).setDepth(10).setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({ targets: aura, scale: 1.16, alpha: 0.3, yoyo: true, repeat: -1, duration: 680 + this.guardians.length * 70, ease: "Sine.inOut" });
+    this.auras.set(e, aura);
+
+    // Spawn pop, then a slow breathing pulse.
+    const baseX = e.scaleX;
+    const baseY = e.scaleY;
+    e.setScale(baseX * 0.3, baseY * 0.3);
     this.tweens.add({
       targets: e,
-      scaleX: e.scaleX * 1.04,
-      scaleY: e.scaleY * 0.96,
-      yoyo: true,
-      repeat: -1,
-      duration: 620 + this.guardians.length * 90,
-      ease: "Sine.inOut",
+      scaleX: baseX,
+      scaleY: baseY,
+      duration: 240,
+      ease: "Back.out",
+      onComplete: () => {
+        this.tweens.add({
+          targets: e,
+          scaleX: baseX * 1.05,
+          scaleY: baseY * 0.95,
+          yoyo: true,
+          repeat: -1,
+          duration: 620 + this.guardians.length * 90,
+          ease: "Sine.inOut",
+        });
+      },
     });
     if (this.renderer.type === Phaser.WEBGL) e.postFX.addGlow(0xff4bd8, 3, 0, false, 0.08, 10);
     this.bars.set(e, this.add.graphics().setDepth(40));
     this.guardians.push(e);
+  }
+
+  private updateGuardian(e: Sprite, time: number) {
+    this.auras.get(e)?.setPosition(e.x, e.y);
+    const state = e.getData("state") as string;
+    const until = e.getData("stateUntil") as number;
+
+    if (state === "telegraph") {
+      e.setVelocity(0, 0); // freeze during the wind-up so the tell is readable
+      if (time >= until) {
+        const dir = new Phaser.Math.Vector2(this.player.x - e.x, this.player.y - e.y).normalize();
+        e.setVelocity(dir.x * ENEMY_LUNGE_SPEED, dir.y * ENEMY_LUNGE_SPEED);
+        e.setData("state", "lunge");
+        e.setData("stateUntil", time + ENEMY_LUNGE_DURATION_MS);
+        this.auras.get(e)?.setFillStyle(0xff2fb0, 0.24);
+        this.impact(e.x, e.y, 0xff3a3a, this.radiusOf(e) + 12);
+        play("attack");
+      }
+      return;
+    }
+
+    if (state === "lunge") {
+      if (time >= until) {
+        e.setData("state", "chase");
+        e.setData("nextLungeAt", time + ENEMY_LUNGE_INTERVAL_MS + Math.random() * 1400);
+      }
+      return; // ride the committed lunge velocity
+    }
+
+    // chase: hunt the player, wind up a lunge when close and off cooldown
+    const d = Phaser.Math.Distance.Between(e.x, e.y, this.player.x, this.player.y);
+    if (d <= ENEMY_LUNGE_RANGE && time >= (e.getData("nextLungeAt") as number)) {
+      e.setData("state", "telegraph");
+      e.setData("stateUntil", time + ENEMY_LUNGE_TELEGRAPH_MS);
+      e.setVelocity(0, 0);
+      this.auras.get(e)?.setFillStyle(0xff3a3a, 0.55);
+      this.tweens.add({ targets: e, scaleX: e.scaleX * 1.28, scaleY: e.scaleY * 1.28, yoyo: true, duration: ENEMY_LUNGE_TELEGRAPH_MS / 2, ease: "Quad.out" });
+      return;
+    }
+    this.physics.moveToObject(e, this.player, ENEMY_SPEED);
+    e.setFlipX(this.player.x < e.x);
   }
 
   private buildLayout() {
@@ -222,21 +311,53 @@ export class GameScene extends Phaser.Scene {
       { x: 627.5, y: wallY, width: 35, height: wallHeight },
       { x: 812.5, y: wallY, width: 95, height: wallHeight },
     ];
-    for (const spec of walls) {
-      const wall = this.add
-        .rectangle(spec.x, spec.y, spec.width, spec.height, 0x172530, 0.92)
-        .setStrokeStyle(2, 0x64778b, 0.95)
-        .setDepth(8);
-      this.physics.add.existing(wall, true);
-      this.layoutWalls.push(wall);
+    for (const s of walls) this.buildWall(s.x, s.y, s.width, s.height);
+
+    // Three lit doorways connect left, center, and right upper rooms.
+    for (const x of [275, 480, 705]) this.buildDoorway(x, wallY);
+  }
+
+  // A carved stone barrier that matches the painted dungeon: cast shadow, dark body,
+  // a lit bevel + deep shade for volume, a glowing rune seam, and stone studs.
+  private buildWall(x: number, y: number, w: number, h: number) {
+    const vertical = h > w;
+    this.add.rectangle(x + 5, y + 7, w, h, 0x05080c, 0.42).setDepth(6); // floor shadow
+
+    const body = this.add.rectangle(x, y, w, h, 0x16212e, 1).setDepth(8); // physics body
+    this.physics.add.existing(body, true);
+    this.layoutWalls.push(body);
+
+    if (vertical) {
+      this.add.rectangle(x - w / 2 + 2, y, 3, h - 4, 0x44586e, 0.9).setDepth(9); // lit edge
+      this.add.rectangle(x + w / 2 - 1, y, 2, h - 4, 0x05080c, 0.85).setDepth(9); // deep shade
+    } else {
+      this.add.rectangle(x, y - h / 2 + 2, w - 4, 3, 0x44586e, 0.9).setDepth(9); // lit top
+      this.add.rectangle(x, y + h / 2 - 1, w - 4, 2, 0x05080c, 0.85).setDepth(9); // base shade
     }
 
-    // Three open doorways connect left, center, and right upper rooms.
-    for (const x of [275, 480, 705]) {
-      this.add.rectangle(x, wallY, 100, 14, 0x8affe0, 0.12).setDepth(7);
-      this.add.rectangle(x - 56, wallY, 8, 38, 0x8295aa, 0.95).setDepth(9);
-      this.add.rectangle(x + 56, wallY, 8, 38, 0x8295aa, 0.95).setDepth(9);
-      this.add.rectangle(x, wallY - 17, 100, 4, 0x8affe0, 0.7).setDepth(9);
+    const seam = vertical
+      ? this.add.rectangle(x, y, 2, h - 14, 0x66f0d8, 0.5)
+      : this.add.rectangle(x, y, w - 14, 2, 0x66f0d8, 0.5);
+    seam.setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({ targets: seam, alpha: 0.16, yoyo: true, repeat: -1, duration: 1400, ease: "Sine.inOut" });
+
+    const studs = Math.max(2, Math.floor((vertical ? h : w) / 42));
+    for (let i = 0; i < studs; i++) {
+      const f = studs === 1 ? 0.5 : i / (studs - 1);
+      const sx = vertical ? x : x - w / 2 + 8 + f * (w - 16);
+      const sy = vertical ? y - h / 2 + 8 + f * (h - 16) : y;
+      this.add.circle(sx, sy, 1.6, 0x2b3c4e, 0.9).setDepth(9);
+    }
+  }
+
+  private buildDoorway(x: number, y: number) {
+    const glow = this.add.rectangle(x, y, 96, 16, 0x66f0d8, 0.14).setDepth(7).setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({ targets: glow, alpha: 0.3, yoyo: true, repeat: -1, duration: 1600, ease: "Sine.inOut" });
+    for (const dx of [-56, 56]) {
+      this.add.rectangle(x + dx, y, 10, 40, 0x1a2635, 1).setDepth(9);
+      this.add.rectangle(x + dx, y - 18, 12, 5, 0x44586e, 0.95).setDepth(9); // stone cap
+      const flame = this.add.circle(x + dx, y - 23, 4, 0xffd27a, 0.9).setDepth(9).setBlendMode(Phaser.BlendModes.ADD);
+      this.tweens.add({ targets: flame, scale: 1.55, alpha: 0.5, yoyo: true, repeat: -1, duration: 240 + Math.random() * 160, ease: "Sine.inOut" });
     }
   }
 
@@ -247,12 +368,13 @@ export class GameScene extends Phaser.Scene {
   private bindInput() {
     const kb = this.input.keyboard!;
     // Capture movement/action keys so arrows & space don't scroll the page.
-    kb.addCapture(["SPACE", "TAB", "ONE", "TWO", "THREE", "UP", "DOWN", "LEFT", "RIGHT"]);
+    kb.addCapture(["SPACE", "TAB", "ONE", "TWO", "THREE", "SHIFT", "UP", "DOWN", "LEFT", "RIGHT"]);
     this.keys = kb.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT") as Record<string, Phaser.Input.Keyboard.Key>;
 
     // SPACE attacks in the direction you're facing; click/tap attacks toward the cursor
     // (full 360° — diagonal and sideways included).
     kb.on("keydown-SPACE", () => this.attack());
+    kb.on("keydown-SHIFT", () => this.dash());
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
       const dir = new Phaser.Math.Vector2(p.worldX - this.player.x, p.worldY - this.player.y);
       this.attack(dir.lengthSq() > 4 ? dir : undefined);
@@ -291,6 +413,16 @@ export class GameScene extends Phaser.Scene {
     this.hudWeapon = this.add
       .text(450, 22, "", { fontFamily: "system-ui", fontSize: "16px", color: "#e8e9f3" })
       .setOrigin(0, 0.5)
+      .setDepth(100);
+
+    this.hudStreak = this.add
+      .text(GAME_W / 2, 22, "", {
+        fontFamily: "system-ui",
+        fontSize: "17px",
+        color: "#8affe0",
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5)
       .setDepth(100);
 
     this.hudMission = this.add
@@ -371,12 +503,17 @@ export class GameScene extends Phaser.Scene {
     } else {
       this.playerTrail.stop();
     }
-    this.player.setVelocity(v.x * PLAYER_SPEED, v.y * PLAYER_SPEED);
+    if (time < this.dashUntil) {
+      // Dash overrides normal movement for its short burst.
+      this.player.setVelocity(this.dashDir.x * DASH_SPEED, this.dashDir.y * DASH_SPEED);
+    } else {
+      this.player.setVelocity(v.x * PLAYER_SPEED, v.y * PLAYER_SPEED);
+    }
 
-    // Guardians chase + touch damage + hp bars.
+    // Guardians hunt (chase + telegraphed lunges) + touch damage + hp bars.
     for (const e of this.guardians) {
       if (!e.active) continue;
-      this.physics.moveToObject(e, this.player, ENEMY_SPEED);
+      this.updateGuardian(e, time);
       this.drawHpBar(e);
       const d = Phaser.Math.Distance.Between(e.x, e.y, this.player.x, this.player.y);
       if (d < this.radiusOf(e) + PLAYER_RADIUS) {
@@ -384,8 +521,45 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
+    // Kill streak decays if you stop killing.
+    if (this.combo > 0 && time > this.comboUntil) {
+      this.combo = 0;
+      this.updateStreakHud();
+    }
+
     if (this.boss && this.boss.active) this.updateBoss(time);
     this.updateOrbs(time);
+  }
+
+  private dash() {
+    const time = this.time.now;
+    if (this.locked || time < this.nextDashAt) return;
+    const dir = this.facing.clone();
+    if (dir.lengthSq() === 0) dir.set(0, 1);
+    dir.normalize();
+    this.dashDir.copy(dir);
+    this.dashUntil = time + DASH_DURATION_MS;
+    this.nextDashAt = time + DASH_COOLDOWN_MS;
+    this.invulnUntil = Math.max(this.invulnUntil, time + DASH_IFRAMES_MS);
+    this.player.setVelocity(dir.x * DASH_SPEED, dir.y * DASH_SPEED);
+    this.playerTrail.start();
+    this.burst(this.player.x, this.player.y, 0x8affe0, 12);
+    this.impact(this.player.x, this.player.y, 0x8affe0, 46);
+
+    // Fading afterimage sells the speed.
+    const ghost = this.add
+      .image(this.player.x, this.player.y, "hero")
+      .setDepth(11)
+      .setAlpha(0.5)
+      .setTint(0x8affe0)
+      .setScale(this.player.scaleX, this.player.scaleY)
+      .setFlipX(this.player.flipX);
+    this.tweens.add({ targets: ghost, alpha: 0, duration: 240, onComplete: () => ghost.destroy() });
+    play("dash");
+  }
+
+  private updateStreakHud() {
+    this.hudStreak.setText(this.combo >= 2 ? `🔥 x${this.combo}` : "");
   }
 
   // ---------- boss ----------
@@ -611,18 +785,35 @@ export class GameScene extends Phaser.Scene {
     const isBoss = !!e.getData("boss");
     const reward = isBoss ? BOSS_REWARD : ENEMY_KILL_REWARD;
     this.tokens += reward;
-    this.refreshHud();
     this.floating(e.x, e.y - 20, `+${reward}`, "#ffd65a");
     this.burst(e.x, e.y, 0xffd65a, isBoss ? 42 : 20);
     this.impact(e.x, e.y, 0xffd65a, isBoss ? 92 : 38);
     this.cameras.main.shake(isBoss ? 380 : 160, isBoss ? 0.014 : 0.008);
     play("coin");
     this.bars.get(e)?.destroy();
+    const aura = this.auras.get(e);
+    if (aura) {
+      this.tweens.killTweensOf(aura);
+      aura.destroy();
+    }
     this.tweens.killTweensOf(e);
     if (isBoss && this.bossTelegraph) {
       this.tweens.killTweensOf(this.bossTelegraph);
       this.bossTelegraph.destroy();
     }
+
+    // Kill streak: chain guardians for bonus tokens (rewards decisive, efficient clears).
+    if (!isBoss) {
+      this.combo = this.time.now < this.comboUntil ? this.combo + 1 : 1;
+      this.comboUntil = this.time.now + COMBO_WINDOW_MS;
+      if (this.combo >= 2) {
+        const bonus = (this.combo - 1) * COMBO_BONUS_TOKENS;
+        this.tokens += bonus;
+        this.floating(e.x, e.y - 44, `x${this.combo}  +${bonus}`, "#8affe0");
+      }
+      this.updateStreakHud();
+    }
+    this.refreshHud();
     e.disableBody(true, true);
 
     if (isBoss) {

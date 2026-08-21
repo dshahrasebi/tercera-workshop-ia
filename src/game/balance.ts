@@ -16,6 +16,23 @@ export const ENEMY_TOUCH_DAMAGE = 1;
 export const ENEMY_COUNT = 3;
 export const ENEMY_KILL_REWARD = 45;
 
+// Guardians wind up and lunge so they feel like they're hunting you, not drifting.
+export const ENEMY_LUNGE_RANGE = 250;
+export const ENEMY_LUNGE_INTERVAL_MS = 2600;
+export const ENEMY_LUNGE_TELEGRAPH_MS = 420;
+export const ENEMY_LUNGE_SPEED = 250;
+export const ENEMY_LUNGE_DURATION_MS = 300;
+
+// Dash/dodge: a short i-frame burst so combat has an out and a rhythm.
+export const DASH_SPEED = 540;
+export const DASH_DURATION_MS = 160;
+export const DASH_COOLDOWN_MS = 700;
+export const DASH_IFRAMES_MS = 240;
+
+// Kill streaks: reward aggressive, efficient clears with bonus tokens.
+export const COMBO_WINDOW_MS = 3500;
+export const COMBO_BONUS_TOKENS = 8;
+
 export const CHEST_REWARD = 70;
 
 // Boss (final mission).

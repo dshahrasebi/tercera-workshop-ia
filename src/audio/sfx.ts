@@ -1,6 +1,6 @@
 // Zero-asset SFX via Web Audio: tiny synthesized blips. Mute persists in localStorage.
 // ponytail: synth beeps, not sampled audio — swap for CC0 samples in a later pass if wanted.
-type Kind = "attack" | "hit" | "coin" | "hurt" | "deny" | "boss" | "victory" | "ui";
+type Kind = "attack" | "hit" | "coin" | "hurt" | "deny" | "boss" | "victory" | "ui" | "dash";
 
 let ctx: AudioContext | null = null;
 let muted = localStorage.getItem("tq_muted") === "1";
@@ -60,5 +60,6 @@ export function play(kind: Kind): void {
       [523, 659, 784, 1047].forEach((f, i) => tone(c, { freq: f, dur: 0.18, type: "square", gain: 0.1, delay: i * 0.12 }));
       break;
     case "ui": tone(c, { freq: 660, dur: 0.05, type: "triangle", gain: 0.07 }); break;
+    case "dash": tone(c, { freq: 760, to: 180, dur: 0.14, type: "sine", gain: 0.09 }); break;
   }
 }
