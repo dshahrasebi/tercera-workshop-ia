@@ -53,21 +53,45 @@ The workshop should help each audience choose better tools, models and working p
 
 ## Día 1 · Lunes 7 de septiembre / Day 1 · Monday 7 September
 
-### Horario provisional / Provisional schedule
+### Timeline del workshop
 
-| Hora | Duración | Bloque / Block | Enfoque previsto / Planned focus |
-|---|---:|---|---|
-| 08:30–08:50 | 20 min | Apertura / Opening | Entrada, bienvenida, conexión y contexto / Arrival, welcome, joining and context |
-| 08:50–10:30 | 100 min | Bloque 1 / Block 1 | Novedades, modelos, créditos y FinOps / News, models, credits and FinOps |
-| 10:30–11:00 | 30 min | Pausa / Break | Almuerzo o pausa, pendiente de confirmar / Lunch or break, to be confirmed |
-| 11:00–12:30 | 90 min | Bloque 2 / Block 2 | Herramientas, Copilot, VS Code, skills y MCP / Tools, Copilot, VS Code, skills and MCP |
-| 12:30–12:45 | 15 min | Receso / Short break | Café, baño y pausa breve / Coffee, break and reset |
-| 12:45–14:00 | 75 min | Bloque 3 / Block 3 | Testing, buenas prácticas, actividades y cierre / Testing, best practices, activities and wrap-up |
-| 14:00 | — | Comida / Lunch | Fin de la sesión / Session ends |
+**Horario:** 08:30 - 14:00
+**Coffee break:** 11:00 - 11:30
 
-**Regla de preparación / Preparation rule:** cada bloque debe poder funcionar como una sesión de aproximadamente 90 minutos, con espacio para explicación, demo y preguntas. La distribución final se cerrará con los ponentes y materiales disponibles.
+| Horario | Sesión | Dinámica | Objetivo |
+|---|---|---|---|
+| 08:30 - 08:40 | Bienvenida: por qué hemos realizado el estudio | Apertura breve | Explicar el cambio hacia AI Credits y por qué necesitamos comprender el consumo de los agentes, sin convertir la apertura en una introducción teórica sobre FinOps. |
+| 08:40 - 08:50 | Las tres preguntas de la jornada | Preguntas abiertas al público | Presentar el hilo conductor: dónde se consumen los tokens, qué incorpora ya GitHub Copilot y qué palancas generan ahorro material. Las respuestas se irán construyendo durante toda la mañana. |
+| 08:50 - 09:30 | Banco de pruebas de Grupo Romeu | Presentación del equipo | Explicar cómo se diseñaron la rúbrica y las pruebas, qué herramientas, modelos y tareas se evaluaron, qué métricas se recogieron y qué dificultades metodológicas aparecieron. |
+| 09:30 - 10:05 | Lo que hemos observado | Resultados y conversación | Compartir cuatro mensajes principales: las herramientas de contexto no ganan siempre; el tipo de tarea condiciona el resultado; el modelo puede tener tanto impacto como la herramienta; y calidad y coste deben evaluarse conjuntamente. |
+| 10:05 - 10:45 | Caso práctico: JSON vs. TOON vs. TSV | Demostración participativa | Mostrar un mismo payload en los tres formatos, comparar el número de tokens y analizar qué información se mantiene, qué cambia y en qué estructuras resulta aplicable cada formato. |
+| 10:45 - 11:00 | Debate abierto | Conversación con los asistentes | Plantear la pregunta: “Si podemos reducir significativamente el payload de una herramienta, ¿debemos seguir utilizando JSON por defecto en todas las tool calls?”. Dejar la cuestión abierta para continuar la conversación durante el descanso. |
+| 11:00 - 11:30 | Coffee break | Café, almuerzo y conversación informal | Descansar del bloque de resultados y favorecer el intercambio de impresiones entre los asistentes. |
+| 11:30 - 12:00 | Novedades de VS Code y GitHub Copilot | Escenarios prácticos | Mostrar cómo está evolucionando el entorno de desarrollo mediante Agent Mode, búsqueda del workspace, selección de contexto, MCP, Skills, modelos y agentes. Conectar estas novedades con los resultados presentados antes del descanso. |
+| 12:00 - 12:25 | El IDE como Agent Host | Demo y casos de uso | Explicar la evolución del IDE hacia un host capaz de ejecutar y coordinar agentes, herramientas y modelos especializados. Revisar ejemplos de colaboración, delegación y selección de agente según la tarea. |
+| 12:25 - 12:50 | Mapa del ecosistema Microsoft AI | Mapa visual y conversación | Ordenar el papel de GitHub Copilot, GitHub Apps, Microsoft 365 Copilot Chat, Azure AI Foundry, Copilot Studio, MCP y los servicios Azure dentro de las fases de desarrollo, construcción, productividad, interoperabilidad y gobierno. |
+| 12:50 - 13:15 | AI FinOps aplicado | Interpretación de los casos vistos | Explicar qué debemos medir realmente: tokens de entrada y salida, caché, modelo, tool calls, lecturas de archivos, latencia, coste por tarea, calidad y riesgo. Utilizar las métricas para interpretar los resultados, no como teoría financiera aislada. |
+| 13:15 - 13:30 | Observabilidad con AI Engineering Fluency | Demostración de la herramienta | Mostrar cómo observar sesiones, modelos, contexto, MCP, tool calls y consumo. Diferenciar las tendencias y estimaciones obtenidas desde logs de la facturación real, evitando cualquier uso orientado a comparar personas. |
+| 13:30 - 13:50 | Propuesta de estándares y próximos experimentos | Trabajo conjunto | Debatir criterios para reducir exploración, optimizar payloads, elegir formatos, seleccionar modelos y medir resultados. Acordar qué hipótesis deben continuar en el banco de pruebas. |
+| 13:50 - 14:00 | Conclusiones y acuerdos | Cierre participativo | Responder conjuntamente a las tres preguntas iniciales, recoger conclusiones y concretar las líneas de trabajo posteriores al workshop. |
 
-Each block should work as an approximately 90-minute session, with time for explanation, demos and questions. Final allocation depends on confirmed speakers and materials.
+#### El workshop se apoya en evidencia interna
+
+Durante el estudio se han realizado dos líneas principales de experimentación:
+
+- Un banco de pruebas sobre herramientas, modelos, mecanismos de contexto y arneses de desarrollo.
+- Un estudio específico sobre formatos de intercambio con 30 pruebas y 237 ejecuciones.
+
+En el estudio de formatos:
+
+- TOON redujo entre un 58,93 % y un 63,44 % los tokens del payload equivalente frente a JSON.
+- TSV redujo un 63,03 % los tokens frente a JSON en las estructuras planas analizadas.
+- TSV no se aplicó a las 11 pruebas jerárquicas.
+- No se registraron errores de ejecución.
+
+> Estos porcentajes representan reducción de tokens del payload comparado, no una reducción automática equivalente del coste total de una sesión agentic.
+
+> La equivalencia semántica completa figura como no determinada en parte del análisis, ya que el servicio utilizado no incluye parsers TOON y TSV. Por tanto, el siguiente paso debe incorporar validaciones funcionales de interpretación y recuperación de información.
 
 ## Propuesta de contenidos / Content proposal
 
