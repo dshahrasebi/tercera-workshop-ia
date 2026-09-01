@@ -56,14 +56,13 @@ The workshop should help each audience choose better tools, models and working p
 ### Timeline del workshop
 
 **Horario:** 08:30 - 14:00
-**Almuerzo / descanso:** 10:30 - 11:00
+**Almuerzo / descanso:** 11:00 - 11:30
 
 | Horario | Contenido |
 |---|---|
 | 08:30 - 08:45 | Entrada, bienvenida y meet and greet (mientras los asistentes toman asiento) |
-| 08:45 - 10:30 | Bloque 1 (FinOps — Parte I): GitHub Copilot, de Premium Requests a AI Credits + AI FinOps, análisis y conclusiones sobre el consumo real + IA eficiente: más valor por cada crédito |
-| 10:30 - 11:00 | Almuerzo / descanso |
-| 11:00 - 11:30 | Bloque 1 (FinOps — Parte II): JSON vs. TOON + CSV vs. TSV |
+| 08:45 - 11:00 | Bloque 1 (FinOps): GitHub Copilot, de Premium Requests a AI Credits + AI FinOps, análisis y conclusiones sobre el consumo real + IA eficiente: más valor por cada crédito + JSON vs. TOON + CSV vs. TSV |
+| 11:00 - 11:30 | Almuerzo / descanso |
 | 11:30 - 12:30 | Bloque 2: novedades en el entorno de desarrollo (IDE: observabilidad con AI Engineering Fluency —extensión—, la novedad del Agent Host) + GitHub Copilot App |
 | 12:30 - 13:30 | Bloque 3: Microsoft 365 Copilot Suite (GitHub Copilot App y Copilot en las herramientas de Office) |
 | 13:30 - 14:00 | Debate y cierre |
