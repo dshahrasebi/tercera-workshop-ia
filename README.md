@@ -66,7 +66,7 @@ The workshop should help each audience choose better tools, models and working p
 | 10:30 - 11:00 | Almuerzo / descanso |
 | 11:00 - 11:30 | Bloque 1 (FinOps — Parte II): JSON vs. TOON + CSV vs. TSV |
 | 11:30 - 12:30 | Bloque 2: novedades en el entorno de desarrollo (IDE: observabilidad con AI Engineering Fluency —extensión—, la novedad del Agent Host) + GitHub Copilot App |
-| 12:30 - 12:45 | Bloque 3: Coffee break |
+| 12:30 - 12:45 | Coffee break |
 | 12:45 - 13:30 | Bloque 4: Microsoft 365 Copilot Suite (Copilot App y Copilot en las herramientas de Office) |
 | 13:30 - 14:00 | Debate y cierre |
 
