@@ -32,8 +32,8 @@ Central repository for the workshop agenda, demos and shared documentation.
 |---|---|---|
 | **Fechas / Dates** | Lunes 7 y miércoles 9 de septiembre de 2026 | Monday 7 and Wednesday 9 September 2026 |
 | **Horario día 1 / Day 1 hours** | 08:30–14:00 | 08:30–14:00 |
-| **Formato / Format** | Por confirmar | To be confirmed |
-| **Lugar / Venue** | Por confirmar | To be confirmed |
+| **Formato / Format** | Presencial | In-person |
+| **Lugar / Venue** | Primera planta, edificio Romeu | First floor, Romeu building |
 | **Audiencia / Audience** | DEV, PMO y testers | Developers, PMO and testers |
 | **Materiales / Materials** | Guion, documentación, demos y actividades | Agenda, documentation, demos and activities |
 
@@ -56,7 +56,7 @@ The workshop should help each audience choose better tools, models and working p
 ### Timeline del workshop
 
 **Horario:** 08:30 - 14:00
-**Coffee break:** 11:00 - 11:30
+**Coffee break:** 10:45 - 11:30
 
 | Horario | Sesión | Dinámica | Objetivo |
 |---|---|---|---|
@@ -65,13 +65,9 @@ The workshop should help each audience choose better tools, models and working p
 | 08:50 - 09:30 | Banco de pruebas de Grupo Romeu | Presentación del equipo | Explicar cómo se diseñaron la rúbrica y las pruebas, qué herramientas, modelos y tareas se evaluaron, qué métricas se recogieron y qué dificultades metodológicas aparecieron. |
 | 09:30 - 10:05 | Lo que hemos observado | Resultados y conversación | Compartir cuatro mensajes principales: las herramientas de contexto no ganan siempre; el tipo de tarea condiciona el resultado; el modelo puede tener tanto impacto como la herramienta; y calidad y coste deben evaluarse conjuntamente. |
 | 10:05 - 10:45 | Caso práctico: JSON vs. TOON vs. TSV | Demostración participativa | Mostrar un mismo payload en los tres formatos, comparar el número de tokens y analizar qué información se mantiene, qué cambia y en qué estructuras resulta aplicable cada formato. |
-| 10:45 - 11:00 | Debate abierto | Conversación con los asistentes | Plantear la pregunta: “Si podemos reducir significativamente el payload de una herramienta, ¿debemos seguir utilizando JSON por defecto en todas las tool calls?”. Dejar la cuestión abierta para continuar la conversación durante el descanso. |
-| 11:00 - 11:30 | Coffee break | Café, almuerzo y conversación informal | Descansar del bloque de resultados y favorecer el intercambio de impresiones entre los asistentes. |
-| 11:30 - 12:00 | Novedades de VS Code y GitHub Copilot | Escenarios prácticos | Mostrar cómo está evolucionando el entorno de desarrollo mediante Agent Mode, búsqueda del workspace, selección de contexto, MCP, Skills, modelos y agentes. Conectar estas novedades con los resultados presentados antes del descanso. |
-| 12:00 - 12:25 | El IDE como Agent Host | Demo y casos de uso | Explicar la evolución del IDE hacia un host capaz de ejecutar y coordinar agentes, herramientas y modelos especializados. Revisar ejemplos de colaboración, delegación y selección de agente según la tarea. |
-| 12:25 - 12:50 | Mapa del ecosistema Microsoft AI | Mapa visual y conversación | Ordenar el papel de GitHub Copilot, GitHub Apps, Microsoft 365 Copilot Chat, Azure AI Foundry, Copilot Studio, MCP y los servicios Azure dentro de las fases de desarrollo, construcción, productividad, interoperabilidad y gobierno. |
-| 12:50 - 13:15 | AI FinOps aplicado | Interpretación de los casos vistos | Explicar qué debemos medir realmente: tokens de entrada y salida, caché, modelo, tool calls, lecturas de archivos, latencia, coste por tarea, calidad y riesgo. Utilizar las métricas para interpretar los resultados, no como teoría financiera aislada. |
-| 13:15 - 13:30 | Observabilidad con AI Engineering Fluency | Demostración de la herramienta | Mostrar cómo observar sesiones, modelos, contexto, MCP, tool calls y consumo. Diferenciar las tendencias y estimaciones obtenidas desde logs de la facturación real, evitando cualquier uso orientado a comparar personas. |
+| 10:45 - 11:30 | Coffee break | Café, almuerzo y conversación informal | Descansar del bloque de resultados y favorecer el intercambio de impresiones entre los asistentes. |
+| 11:30 - 12:30 | El IDE como Agent Host | Demo y casos de uso | Explicar la evolución del IDE hacia un host capaz de ejecutar y coordinar agentes, herramientas y modelos especializados. Revisar ejemplos de colaboración, delegación y selección de agente según la tarea. |
+| 12:30 - 13:30 | Observabilidad con AI Engineering Fluency | Demostración de la herramienta | Mostrar cómo observar sesiones, modelos, contexto, MCP, tool calls y consumo. Diferenciar las tendencias y estimaciones obtenidas desde logs de la facturación real, evitando cualquier uso orientado a comparar personas. |
 | 13:30 - 13:50 | Propuesta de estándares y próximos experimentos | Trabajo conjunto | Debatir criterios para reducir exploración, optimizar payloads, elegir formatos, seleccionar modelos y medir resultados. Acordar qué hipótesis deben continuar en el banco de pruebas. |
 | 13:50 - 14:00 | Conclusiones y acuerdos | Cierre participativo | Responder conjuntamente a las tres preguntas iniciales, recoger conclusiones y concretar las líneas de trabajo posteriores al workshop. |
 
@@ -171,12 +167,12 @@ Schedule to be confirmed.
 - [ ] Confirmar configuración de modelos y modo AUTO.
 - [ ] Revisar conclusiones sobre consumo, créditos y coste.
 - [ ] Decidir inclusión de testimonios antes del **28/08/2026**.
-- [ ] Confirmar formato, lugar, enlaces y recursos visuales.
+- [ ] Confirmar enlaces y recursos visuales.
 
 ### Decisiones ya tomadas / Decisions already made
 
 - Este repositorio será el punto central de documentación y guion.
-- El día 1 tendrá tres bloques principales: 100, 90 y 75 minutos.
+- El workshop será presencial, en la primera planta del edificio Romeu.
 - La agenda actual es provisional y debe poder ajustarse a los ponentes.
 - Los materiales no confirmados se mostrarán como pendientes, no como contenido definitivo.
 
