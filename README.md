@@ -12,7 +12,7 @@ Prepare better. Work with context. Use AI deliberately.
 
 </div>
 
-> **Estado / Status:** planificación inicial · agenda provisional · enlaces, ponentes y materiales por confirmar
+> **Estado / Status:** planificación inicial · agenda del día 1 confirmada · enlaces, ponentes y materiales por confirmar
 
 Repositorio central para el guion, las demos y la documentación compartida de la workshop.
 
@@ -33,7 +33,7 @@ Central repository for the workshop agenda, demos and shared documentation.
 | **Fechas / Dates** | Lunes 7 y miércoles 9 de septiembre de 2026 | Monday 7 and Wednesday 9 September 2026 |
 | **Horario día 1 / Day 1 hours** | 08:30–14:00 | 08:30–14:00 |
 | **Formato / Format** | Presencial | In-person |
-| **Lugar / Venue** | Primera planta, edificio Romeu | First floor, Romeu building |
+| **Lugar / Venue** | Edificio Romeu | Romeu building |
 | **Audiencia / Audience** | DEV, PMO y testers | Developers, PMO and testers |
 | **Materiales / Materials** | Guion, documentación, demos y actividades | Agenda, documentation, demos and activities |
 
@@ -56,20 +56,19 @@ The workshop should help each audience choose better tools, models and working p
 ### Timeline del workshop
 
 **Horario:** 08:30 - 14:00
-**Coffee break:** 10:45 - 11:30
+**Almuerzo / descanso:** 10:30 - 11:00
+**Coffee break:** 12:30 - 12:45
 
-| Horario | Sesión | Dinámica | Objetivo |
-|---|---|---|---|
-| 08:30 - 08:40 | Bienvenida: por qué hemos realizado el estudio | Apertura breve | Explicar el cambio hacia AI Credits y por qué necesitamos comprender el consumo de los agentes, sin convertir la apertura en una introducción teórica sobre FinOps. |
-| 08:40 - 08:50 | Las tres preguntas de la jornada | Preguntas abiertas al público | Presentar el hilo conductor: dónde se consumen los tokens, qué incorpora ya GitHub Copilot y qué palancas generan ahorro material. Las respuestas se irán construyendo durante toda la mañana. |
-| 08:50 - 09:30 | Banco de pruebas de Grupo Romeu | Presentación del equipo | Explicar cómo se diseñaron la rúbrica y las pruebas, qué herramientas, modelos y tareas se evaluaron, qué métricas se recogieron y qué dificultades metodológicas aparecieron. |
-| 09:30 - 10:05 | Lo que hemos observado | Resultados y conversación | Compartir cuatro mensajes principales: las herramientas de contexto no ganan siempre; el tipo de tarea condiciona el resultado; el modelo puede tener tanto impacto como la herramienta; y calidad y coste deben evaluarse conjuntamente. |
-| 10:05 - 10:45 | Caso práctico: JSON vs. TOON vs. TSV | Demostración participativa | Mostrar un mismo payload en los tres formatos, comparar el número de tokens y analizar qué información se mantiene, qué cambia y en qué estructuras resulta aplicable cada formato. |
-| 10:45 - 11:30 | Coffee break | Café, almuerzo y conversación informal | Descansar del bloque de resultados y favorecer el intercambio de impresiones entre los asistentes. |
-| 11:30 - 12:30 | El IDE como Agent Host | Demo y casos de uso | Explicar la evolución del IDE hacia un host capaz de ejecutar y coordinar agentes, herramientas y modelos especializados. Revisar ejemplos de colaboración, delegación y selección de agente según la tarea. |
-| 12:30 - 13:30 | Observabilidad con AI Engineering Fluency | Demostración de la herramienta | Mostrar cómo observar sesiones, modelos, contexto, MCP, tool calls y consumo. Diferenciar las tendencias y estimaciones obtenidas desde logs de la facturación real, evitando cualquier uso orientado a comparar personas. |
-| 13:30 - 13:50 | Propuesta de estándares y próximos experimentos | Trabajo conjunto | Debatir criterios para reducir exploración, optimizar payloads, elegir formatos, seleccionar modelos y medir resultados. Acordar qué hipótesis deben continuar en el banco de pruebas. |
-| 13:50 - 14:00 | Conclusiones y acuerdos | Cierre participativo | Responder conjuntamente a las tres preguntas iniciales, recoger conclusiones y concretar las líneas de trabajo posteriores al workshop. |
+| Horario | Contenido |
+|---|---|
+| 08:30 - 08:45 | Entrada, bienvenida y meet and greet (mientras los asistentes toman asiento) |
+| 08:45 - 10:30 | Bloque 1 (FinOps — Parte I): GitHub Copilot, de Premium Requests a AI Credits + AI FinOps, análisis y conclusiones sobre el consumo real + IA eficiente: más valor por cada crédito |
+| 10:30 - 11:00 | Almuerzo / descanso |
+| 11:00 - 11:30 | Bloque 1 (FinOps — Parte II): JSON vs. TOON + CSV vs. TSV |
+| 11:30 - 12:30 | Bloque 2: novedades en el entorno de desarrollo (IDE: observabilidad con AI Engineering Fluency —extensión—, la novedad del Agent Host) + GitHub Copilot App |
+| 12:30 - 12:45 | Bloque 3: Coffee break |
+| 12:45 - 13:30 | Bloque 4: Microsoft 365 Copilot Suite (Copilot App y Copilot en las herramientas de Office) |
+| 13:30 - 14:00 | Debate y cierre |
 
 #### El workshop se apoya en evidencia interna
 
@@ -162,7 +161,7 @@ Schedule to be confirmed.
 
 - [ ] Actualizar presentación con todos los datos de la rúbrica.
 - [ ] Publicar presentación y documentación en Drive público.
-- [ ] Confirmar responsables, demos y duración de cada bloque.
+- [ ] Confirmar responsables y demos de cada bloque.
 - [ ] Validar demo de agentes de pruebas.
 - [ ] Confirmar configuración de modelos y modo AUTO.
 - [ ] Revisar conclusiones sobre consumo, créditos y coste.
@@ -172,8 +171,8 @@ Schedule to be confirmed.
 ### Decisiones ya tomadas / Decisions already made
 
 - Este repositorio será el punto central de documentación y guion.
-- El workshop será presencial, en la primera planta del edificio Romeu.
-- La agenda actual es provisional y debe poder ajustarse a los ponentes.
+- El workshop será presencial, en el edificio Romeu.
+- El horario del día 1 es oficial; el contenido de cada bloque puede ajustarse a los ponentes.
 - Los materiales no confirmados se mostrarán como pendientes, no como contenido definitivo.
 
 ## Organización del repositorio / Repository structure
